@@ -62,11 +62,21 @@ export class VolumeRenderHelper2 extends BaseTHREEHelper {
 
   private _prepareMaterial() {
     let length = this._stack.rawData[0].length;
-    let f32A = new Float32Array(length);
+    let stack = this._stack;
+    //let f32A = new Float32Array(length);
 
-    for (let i = 0; i < length; i++) {
-      f32A[i] = this._stack.rawData[0][i] / 255.0;
-    }
+    // for (let i = 0; i < length; i++) {
+    //   f32A[i] = this._stack.rawData[0][i] / 255.0;
+    // }
+
+    const totalNbOfVoxels = stack._dimensionsIJK.x * stack._dimensionsIJK.y * stack._dimensionsIJK.z;
+    const f32A = new Float32Array(totalNbOfVoxels);
+     for (let i = 0; i < this._stack.frame.length; i++) {
+       const frame = stack.frame[i];
+       for (let k = 0; k < frame._rows * frame._columns; k++) {
+           f32A[i  *  frame._rows *  frame._columns + k] = frame.pixelData[k] / 255.0;
+       }
+     }
 
     this._dataTexture = new THREE.DataTexture3D(
         f32A,
@@ -95,10 +105,15 @@ export class VolumeRenderHelper2 extends BaseTHREEHelper {
     const worldBBox = this._stack.worldBoundingBox();
     const centerLPS = this._stack.worldCenter();
 
+    // this._geometry = new THREE.BoxGeometry(
+    //   worldBBox[1] - worldBBox[0],
+    //   worldBBox[3] - worldBBox[2],
+    //   worldBBox[5] - worldBBox[4]
+    // );
     this._geometry = new THREE.BoxGeometry(
-      worldBBox[1] - worldBBox[0],
-      worldBBox[3] - worldBBox[2],
-      worldBBox[5] - worldBBox[4]
+      this.stack.dimensionsIJK.x,
+      this.stack.dimensionsIJK.y,
+      this.stack.dimensionsIJK.z
     );
     this._geometry.applyMatrix(
       new THREE.Matrix4().makeTranslation(centerLPS.x, centerLPS.y, centerLPS.z)
