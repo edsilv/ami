@@ -34,11 +34,18 @@ uniform vec3 upositionBeingLit;
 uniform int upositionBeingLitInCamera;
 uniform vec3 uIntensity;
 
+uniform int uIsPaused;
+
 varying vec4 vPos;
 varying mat4 vProjectionViewMatrix;
 varying vec4 vProjectedCoords;
 
 void main(void) {
+  // If paused != 0, return
+  if (uIsPaused != 0) {
+    return;
+  }
+
   vec3 rayOrigin = cameraPosition;
   vec3 rayDirection = normalize(vPos.xyz - rayOrigin);
 
@@ -76,7 +83,11 @@ void main(void) {
 
   mat4 dataToWorld = invertMat4(uWorldToData);
 
-  for(int i = 0; i < uSteps; i++){
+  for(int i = 0; i < MAX_STEPS; i++){
+    if (i >= uSteps) {
+      break;
+    }
+    
     vec3 currentPosition = rayOrigin + rayDirection * tCurrent;
     vec3 transformedPosition = currentPosition;
     vec4 dataCoordinatesRaw = uWorldToData * vec4(transformedPosition, 1.0);
