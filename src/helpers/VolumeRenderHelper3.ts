@@ -1,6 +1,7 @@
  
 import { Volume3Material, Volume3Uniforms } from '../shaders';
 import { BaseTHREEHelper } from './BaseTHREEHelper';
+import { StackModel } from '../models';
 
 const THREE = (window as any).THREE;
 
@@ -53,17 +54,19 @@ export class VolumeRenderHelper3 extends BaseTHREEHelper {
   }
   set windowCenter(value: number) {
     this._windowCenter = value;
-    this._material.uniforms.uWindowCenterWidth.value = [
-      this._windowCenter - this._offset,
-      this._windowWidth,
-    ];
+    // this._material.uniforms.uWindowCenterWidth.value = [
+    //   this._windowCenter - this._offset,
+    //   this._windowWidth,
+    // ];
+    this._processData();
   }
   set windowWidth(value: number) {
     this._windowWidth = value;
-    this._material.uniforms.uWindowCenterWidth.value = [
-      this._windowCenter - this._offset,
-      this._windowWidth,
-    ];
+    // this._material.uniforms.uWindowCenterWidth.value = [
+    //   this._windowCenter - this._offset,
+    //   this._windowWidth,
+    // ];
+    this._processData();
   }
   set steps(steps: number) {
     this._steps = steps;
@@ -126,22 +129,11 @@ export class VolumeRenderHelper3 extends BaseTHREEHelper {
     this._windowCenter = this._stack.windowCenter;
     this._windowWidth = this._stack.windowWidth * 0.8; // multiply for better default visualization
 
-    const totalNbOfVoxels = this.stack._dimensionsIJK.x * this.stack._dimensionsIJK.y * this.stack._dimensionsIJK.z;
-    this._unpackedStack = new Float32Array(totalNbOfVoxels);
-
-    for (let i = 0; i < this._stack.frame.length; i++) {
-        const frame = this.stack.frame[i];
-        // For each pixel in the frame
-        for(let j = 0; j < frame.rows; j++) {
-            for (let k = 0; k < frame._columns; k++) {
-                // Define pixel index
-                const idx: number = i  *  frame._rows *  frame._columns + k;
-                // Get raw data value
-                const rawPixel: number = frame.pixelData[k];
-                // Unpack and Cache the stack value
-                this._unpackedStack[idx] = this._unpackStackPixel(rawPixel, i, j, k);
-            }
-        }
+    if (this._stack.numberOfChannels === 1) {
+      this._unpackStack();
+    }
+    else {
+      console.error("cannot unpack multi-channel stack!");
     }
   }
 
@@ -152,7 +144,6 @@ export class VolumeRenderHelper3 extends BaseTHREEHelper {
     this._material.uniforms.uSteps.value = this._steps;
     this._material.uniforms.uAlphaCorrection.value = this._alphaCorrection;        
     this._material.uniforms.uShininess.value = this._shininess;
-    this._material.uniforms.uIntensityData.value = this._dataTexture;
 
     this._processData();
 
@@ -165,17 +156,17 @@ export class VolumeRenderHelper3 extends BaseTHREEHelper {
   private _processData() {
     const totalNbOfVoxels = this.stack._dimensionsIJK.x * this.stack._dimensionsIJK.y * this.stack._dimensionsIJK.z;
     const intensityArray = new Float32Array(totalNbOfVoxels);
-    const gradientArray = new Float32Array(totalNbOfVoxels * 3);
+    const gradientArray = new Float32Array(totalNbOfVoxels * 4);
     
     const tempGradientArray = [];
 
-    const windowCenter = this._material.uniforms.uWindowCenterWidth.value[0];
-    const windowWidth = this._material.uniforms.uWindowCenterWidth.value[1];
+    const windowCenter = this._windowCenter;
+    const windowWidth = this._windowWidth;
     // Get the minimum of the window
     const windowMin = windowCenter - windowWidth * 0.5;
 
-    const rescaleSlope = this._material.uniforms.uRescaleSlopeIntercept.value[0];
-    const rescaleIntercept = this._material.uniforms.uRescaleSlopeIntercept.value[1];
+    const rescaleSlope = this._stack.rescaleSlope;
+    const rescaleIntercept = this._stack.rescaleIntercept;
 
     // Intensity calculations happen every time a uniform is changed
     // For each frame in the stack
@@ -210,11 +201,12 @@ export class VolumeRenderHelper3 extends BaseTHREEHelper {
     }
 
     // Allocate the gradient F32 array
-    for (let g = 0; g < totalNbOfVoxels * 3; g +=3) {
-        const gradient = tempGradientArray[g / 3];
+    for (let g = 0; g < totalNbOfVoxels * 4; g +=4) {
+        const gradient = tempGradientArray[g / 4];
         gradientArray[g] = gradient.x;
         gradientArray[g + 1] = gradient.y;
         gradientArray[g + 2] = gradient.z;
+        gradientArray[g + 3] = 0;
     }
 
     this._dataTexture = new THREE.DataTexture3D(
@@ -239,52 +231,53 @@ export class VolumeRenderHelper3 extends BaseTHREEHelper {
         this._stack.dimensionsIJK.y,
         this._stack.dimensionsIJK.z
     );				
-    this._gradientTexture.format = THREE.RGBFormat;
+    this._gradientTexture.format = THREE.RGBAFormat;
     this._gradientTexture.type = THREE.FloatType;
     this._gradientTexture.minFilter = THREE.LinearFilter;
     this._gradientTexture.magFilter = THREE.LinearFilter;
     // Unpack each value as a new Vec3, instead of merging several into a single vec4
-    this._gradientTexture.unpackAlignment = 3;
+    // this._gradientTexture.unpackAlignment = 3;
     this._gradientTexture.needsUpdate = true;
 
     (this._material.uniforms as unknown as Volume3Uniforms).uGradientData.value = this._gradientTexture;
   }
 
   // Unpacking only happens once, at load-time
-  private _unpackStackPixel(rawPixel: number, i: number, j: number, k: number): number {
-    if (this._stack.numberOfChannels === 1) {
-        if (this._stack.bitsAllocated === 8) {
-            return rawPixel / 255.0;
+  private _unpackStack() {
+    let totalNbOfVoxels = this.stack._dimensionsIJK.x * this.stack._dimensionsIJK.y * this.stack._dimensionsIJK.z;
+    // 8 === 1, 16 === 2, 32 === 4
+    let stride = this._stack.bitsAllocated / 8;
+    this._unpackedVoxels = new Float32Array(totalNbOfVoxels);
+
+    let stack = this._stack as StackModel;
+
+    for (let x = 0; x < stack.dimensionsIJK.x; x++) {
+      for (let y = 0; y < stack.dimensionsIJK.y; y++) {
+        for (let z = 0; z < stack.dimensionsIJK.z * stride; z+= stride) {
+          const idx = (x  *  stack.dimensionsIJK.x) +  (y * stack.dimensionsIJK.y) + z;
+
+          let bytes = []
+          // Get the raw values from the stack
+          for (let b = 0; b < stride; b++) {
+            bytes.push(stack.rawData[0][idx + b]);
+          }
+
+          let value;
+          if (stride === 1) {
+              value = bytes[0] / 255.0;
+          }
+          else if (stride === 2) {
+            value =((bytes[0] / 255) + (bytes[1] / 255)) / 2;
+          }
+          else if (stride === 4) {
+            value =((bytes[0] / 255) + (bytes[1] / 255) + (bytes[2] / 255) + (bytes[3] / 255)) / 4;
+          }
+
+          const uidx = (x  *  stack.dimensionsIJK.x) +  (y * stack.dimensionsIJK.y) + (z / stride);
+          this._unpackedVoxels[uidx] = value;
         }
-        else {
-            console.error("Unpacking for non-unsigned-byte data is undefined!");
-        }
-        // if (this._stack.bitsAllocated === 16) {
-        //     unpack16(    
-        //         packedData, 
-        //         offset, 
-        //         unpackedData
-        //     );
-        //     return;
-        // }
-        // if (this._stack.bitsAllocated === 32) {
-        //     unpack32(    
-        //         packedData, 
-        //         offset, 
-        //         uPixelType,
-        //         unpackedData
-        //     );
-        //     return;
-        // }
-    } 
-    else {
-        console.error("Unpacking for non-unsigned-byte data is undefined!");
+      }
     }
-    // unpackIdentity(
-    //     packedData, 
-    //     offset, 
-    //     unpackedData
-    // );
   }
 
   private _trilinearVoxelInterpolation(currentVoxel: THREE.Vector3, frame: any): intensityResult {

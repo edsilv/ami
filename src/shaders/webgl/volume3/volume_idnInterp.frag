@@ -4,6 +4,8 @@
 #pragma glslify: AMIphong = require(../../utility/AMIphong.glsl)
 #pragma glslify: highpRandF32 = require(../../utility/highpRandF32.glsl)
 
+precision highp sampler3D;
+
 const int MAX_STEPS = 1024;
 const float EPSILON = 0.0000152587;
 
@@ -96,7 +98,7 @@ void main(void) {
     // );
 
     // Read from a sampler3D
-    intensity = texture(uIntensityData, currentVoxel);
+    intensity = texture(uIntensityData, currentVoxel).x;
 
     // map gradient to world space and normalize before using
     // we avoid to call normalize as it may be undefined if vector length == 0.

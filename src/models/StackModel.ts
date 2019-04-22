@@ -37,7 +37,7 @@ export default class StackModel extends BaseModel {
   private _lps2IJK: any;
   private _aabb2LPS: any;
   private _lps2AABB: any;
-  private _dimensionsIJK: any;
+  private _dimensionsIJK: Vector3;
   private _halfDimensionsIJK: any;
   private _spacing: Vector3;
   private _spacingBetweenSlices: number;
