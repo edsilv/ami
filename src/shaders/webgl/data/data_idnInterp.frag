@@ -4,6 +4,8 @@
 // uniform mat4 viewMatrix;
 // uniform vec3 cameraPosition;
 
+const int MAX_STEPS = 1024;
+
 uniform int uTextureSize;
 uniform sampler2D uTextureContainer[7];      // Length 7
 uniform ivec3 uDataDimensions;
@@ -88,7 +90,10 @@ void main(void) {
         vec3 origin = vPos - uThickness * 0.5 * vNormal;
         vec4 dataValueAcc = vec4(0.);
 
-        for (int i = 0; i < steps; i++) {
+        for (int i = 0; i < MAX_STEPS; i++) {
+            if (i >= steps) {
+                break;
+            }
             vec4 dataCoordinates = uWorldToData * vec4(origin + float(i) * uSpacing * vNormal, 1.);
             vec3 currentVoxel = dataCoordinates.xyz;
 

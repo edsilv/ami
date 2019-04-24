@@ -14,15 +14,11 @@ export class VolumeRenderHelper extends BaseTHREEHelper {
   private _shininess: number = 10.0;
   private _steps: number = 32;
   private _offset: number = 0;
-  private _isPaused: number = 0;
 
   private _textureLUT: THREE.Texture;
   //#endregion
 
   //#region Getters
-  public get isPaused(): number {
-    return this._isPaused;
-  }
   get windowCenter(): number {
     return this._windowCenter;
   }
@@ -53,9 +49,6 @@ export class VolumeRenderHelper extends BaseTHREEHelper {
   //#endregion
 
   //#region Setters 
-  public set isPaused(value: number) {
-    this._isPaused = value;
-  }
   set textureLUT(value: THREE.Texture) {
     this._textureLUT = value;
     this._material.uniforms.uTextureLUT.value = this._textureLUT;
@@ -193,7 +186,6 @@ export class VolumeRenderHelper extends BaseTHREEHelper {
     // this._material.uniforms.uStepsPerFrame.value = this._stepsPerFrame;
     // // this.resetStepsSinceChange()
     // this._material.uniforms.uAlgorithm.value = this._algorithm;
-    this._material.uniforms.uIsPaused.value = this._isPaused;
 
     this._material.needsUpdate = true;
   }

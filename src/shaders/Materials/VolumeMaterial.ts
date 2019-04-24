@@ -52,7 +52,6 @@ export interface VolumeUniforms {
     // uAlgorithm: { value: number },              // int
     // uStepsPerFrame: { value: number },          // int
     // uStepsSinceChange: { value: number }        // int
-    uIsPaused: { value: number }                // int
 }
 
 export class VolumeMaterial {
@@ -130,7 +129,6 @@ export class VolumeMaterial {
         // uAlgorithm: { value: 0 },                       // int
         // uStepsPerFrame: { value: 4 },                   // int
         // uStepsSinceChange: { value: 0 }                 // int
-        uIsPaused: { value: 0 }                          // int
     } as VolumeUniforms;
 
     public static get defaultUniforms() {
