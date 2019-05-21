@@ -106,12 +106,7 @@ export class VolumeRenderHelper4 extends BaseTHREEHelper {
             }
         );
 
-      let tex = renderTarget.texture;
-      tex.needsUpdate = true;
-      tex.flipY = true;
-
       this._unpackingTargets.push(renderTarget);
-      this._unpackedTextures.push(tex);
     }
   }
 
@@ -119,6 +114,7 @@ export class VolumeRenderHelper4 extends BaseTHREEHelper {
     this._prepareUnpackedTextures();
     let preProcessScene = new THREE.Scene();
     let preProcessCamera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+    preProcessCamera.position.z = 1;
     let preProcessRenderer = new THREE.WebGLRenderer();
 
     let planeGeom = new THREE.PlaneGeometry( 1, 1, 1, 1);
@@ -132,11 +128,15 @@ export class VolumeRenderHelper4 extends BaseTHREEHelper {
     let planeMesh = new THREE.Mesh(planeGeom, planeMaterial);
     preProcessScene.add(planeMesh);
 
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < this._textures.length; i++) {
         // Switch the active texture
         planeMaterial.uniforms.uTexture.value = this._textures[i];
         // Render to the render target
-        preProcessRenderer.render(preProcessScene, preProcessCamera, this._unpackingTargets[i].texture);
+        preProcessRenderer.setRenderTarget(this._unpackingTargets[i]);
+        preProcessRenderer.render(preProcessScene, preProcessCamera);
+        let tex = this._unpackingTargets[i].texture.clone();
+        tex.flipY = true;
+        this._unpackedTextures.push(tex);
     }
 
     // Dispose of preProcessing Rig
@@ -149,6 +149,8 @@ export class VolumeRenderHelper4 extends BaseTHREEHelper {
     preProcessCamera = null;
 
     this._material.uniforms.uTextureContainer.value = this._unpackedTextures;
+
+    this._material.needsUpdate = true;
   }
 
   protected _init() {
@@ -186,7 +188,7 @@ export class VolumeRenderHelper4 extends BaseTHREEHelper {
     // uniforms
     this._material.uniforms.uWorldBBox.value = this._stack.worldBoundingBox();
     this._material.uniforms.uTextureSize.value = this._stack.textureSize;
-    this._material.uniforms.uTextureContainer.value = this._textures;
+    this._material.uniforms.uTextureContainer.value = this._unpackedTextures;
     this._material.uniforms.uWorldToData.value = this._stack.lps2IJK;
     this._material.uniforms.uNumberOfChannels.value = this._stack.numberOfChannels;
     this._material.uniforms.uPixelType.value = this._stack.pixelType;
@@ -230,8 +232,13 @@ export class VolumeRenderHelper4 extends BaseTHREEHelper {
     for (let j = 0; j < this._textures.length; j++) {
       this._textures[j].dispose();
       this._textures[j] = null;
+
+      this._unpackedTextures[j].dispose();
+      this._unpackedTextures[j] = null;
     }
     this._textures = null;
+    this._unpackedTextures = null;
+    this._unpackingTargets = null;
 
     // material, geometry and mesh
     this.remove(this._mesh);

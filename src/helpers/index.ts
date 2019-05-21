@@ -8,7 +8,7 @@ import ProgressBarHelper from './ProgressBarHelper';
 import ProgressBarEventBasedHelper from './ProgressBarEventBasedHelper';
 import {SliceHelper} from './SliceHelper';
 import {StackHelper} from './StackHelper';
-import {VolumeRenderHelper} from './VolumeHelpers/VolumeRenderHelper';
+//import {VolumeRenderHelper} from './VolumeHelpers/VolumeRenderHelper';
 import {VolumeRenderHelper2} from './VolumeHelpers/VolumeRenderHelper2';
 import {VolumeRenderHelper3} from './VolumeHelpers/VolumeRenderHelper3';
 import {VolumeRenderHelper4} from './VolumeHelpers/VolumeRenderHelper4';
@@ -17,7 +17,7 @@ export {
   ContourHelper,
   LocalizerHelper,
   SliceHelper,
-  VolumeRenderHelper,
+  //VolumeRenderHelper,
   StackHelper,
   BorderHelper,
   BoundingBoxHelper,
@@ -27,5 +27,5 @@ export {
   ProgressBarEventBasedHelper,
   VolumeRenderHelper2,
   VolumeRenderHelper3,
-  VolumeRenderHelper4
+  VolumeRenderHelper4 as VolumeRenderHelper
 };

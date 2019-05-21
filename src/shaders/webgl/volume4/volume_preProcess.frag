@@ -1,8 +1,4 @@
-#pragma glslify: intersectsBox = require(../../utility/intersectsBox.glsl)
-#pragma glslify: getIntensityTri = require(./getIntensityTri4.glsl)
-#pragma glslify: invertMat4 = require(../../utility/invertMat4.glsl)
-#pragma glslify: AMIphong = require(../../utility/AMIphong.glsl)
-#pragma glslify: highpRandF32 = require(../../utility/highpRandF32.glsl)
+#pragma glslify: unpack = require(../../utility/unpack.glsl)
 
 uniform sampler2D uTexture;
 uniform int uNumberOfChannels;
