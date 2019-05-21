@@ -1,4 +1,4 @@
-import { MaterialUtils } from "./MaterialUtils";
+import { MaterialUtils } from "../MaterialUtils";
 
 const vertSource = require('raw-loader!glslify-loader!../webgl/default.vert').default;
 const fragmentSourceIdn = require ('raw-loader!glslify-loader!../webgl/volume3/volume_idnInterp.frag').default;

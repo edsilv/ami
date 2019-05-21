@@ -1,7 +1,7 @@
  
-import { Volume3Material, Volume3Uniforms } from '../shaders';
-import { BaseTHREEHelper } from './BaseTHREEHelper';
-import { StackModel } from '../models';
+import { Volume3Material, Volume3Uniforms } from '../../shaders';
+import { BaseTHREEHelper } from '../BaseTHREEHelper';
+import { StackModel } from '../../models';
 
 const THREE = (window as any).THREE;
 
@@ -125,7 +125,7 @@ export class VolumeRenderHelper3 extends BaseTHREEHelper {
 
     // compensate for the offset to only pass > 0 values to shaders
     // models > models.stack.js : _packTo8Bits
-    this._offset = Math.min(0, this._stack._minMax[0]);
+    this._offset = Math.min(0, this._stack.minMax[0]);
     this._windowCenter = this._stack.windowCenter;
     this._windowWidth = this._stack.windowWidth * 0.8; // multiply for better default visualization
 
@@ -154,7 +154,7 @@ export class VolumeRenderHelper3 extends BaseTHREEHelper {
    * Perform Unpacking on data prior to rendering
    */
   private _processData() {
-    const totalNbOfVoxels = this.stack._dimensionsIJK.x * this.stack._dimensionsIJK.y * this.stack._dimensionsIJK.z;
+    const totalNbOfVoxels = this.stack.dimensionsIJK.x * this.stack.dimensionsIJK.y * this.stack.dimensionsIJK.z;
     const intensityArray = new Float32Array(totalNbOfVoxels);
     const gradientArray = new Float32Array(totalNbOfVoxels * 4);
     
@@ -244,7 +244,7 @@ export class VolumeRenderHelper3 extends BaseTHREEHelper {
 
   // Unpacking only happens once, at load-time
   private _unpackStack() {
-    let totalNbOfVoxels = this.stack._dimensionsIJK.x * this.stack._dimensionsIJK.y * this.stack._dimensionsIJK.z;
+    let totalNbOfVoxels = this.stack.dimensionsIJK.x * this.stack.dimensionsIJK.y * this.stack.dimensionsIJK.z;
     // 8 === 1, 16 === 2, 32 === 4
     let stride = this._stack.bitsAllocated / 8;
     this._unpackedVoxels = new Float32Array(totalNbOfVoxels);

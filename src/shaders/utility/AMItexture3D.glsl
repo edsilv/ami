@@ -36,6 +36,7 @@ void AMItexture3D(
     float textureIndexF = float(textureIndex);
     vec4 addition = vec4(0.);
 
+    // Conditionally assigns one value, but is done to replace and IF that checks for which texture in the container is required
     for (int i = 0; i < 7; i++ ) {
         float i_float = float(i);
         addition += step( abs( textureIndexF - i_float ), 0.0 ) * texture2D(uTextureContainer[i], uv);

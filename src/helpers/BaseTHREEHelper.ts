@@ -1,8 +1,10 @@
+import { StackModel } from "../models";
+
 const THREE = (window as any).THREE;
 
 export abstract class BaseTHREEHelper extends THREE.Object3D {
   //#region Variables
-  protected _stack;
+  protected _stack: StackModel;
   // default to trilinear interpolation
   protected _interpolation = 1;
   protected _windowWidth = 0.0;
@@ -60,7 +62,7 @@ export abstract class BaseTHREEHelper extends THREE.Object3D {
 
   protected _prepareTexture() {
     this._textures = [];
-    for (let m = 0; m < this._stack._rawData.length; m++) {
+    for (let m = 0; m < this._stack.rawData.length; m++) {
       const tex = new THREE.DataTexture(
         this._stack.rawData[m],
         this._stack.textureSize,

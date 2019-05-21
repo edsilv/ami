@@ -1,6 +1,6 @@
  
-import { VolumeMaterial } from '../shaders';
-import { BaseTHREEHelper } from './BaseTHREEHelper';
+import { VolumeMaterial } from '../../shaders';
+import { BaseTHREEHelper } from '../BaseTHREEHelper';
 
 const THREE = (window as any).THREE;
 
@@ -132,7 +132,7 @@ export class VolumeRenderHelper extends BaseTHREEHelper {
 
     // compensate for the offset to only pass > 0 values to shaders
     // models > models.stack.js : _packTo8Bits
-    this._offset = Math.min(0, this._stack._minMax[0]);
+    this._offset = Math.min(0, this._stack.minMax[0]);
     this._windowCenter = this._stack.windowCenter;
     this._windowWidth = this._stack.windowWidth * 0.8; // multiply for better default visualization
   }

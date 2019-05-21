@@ -1,5 +1,5 @@
-import { BaseTHREEHelper } from "./BaseTHREEHelper";
-import { Volume2Material } from "../shaders";
+import { BaseTHREEHelper } from "../BaseTHREEHelper";
+import { Volume2Material } from "../../shaders";
 
 const THREE = (window as any).THREE;
 
@@ -69,7 +69,7 @@ export class VolumeRenderHelper2 extends BaseTHREEHelper {
     //   f32A[i] = this._stack.rawData[0][i] / 255.0;
     // }
 
-    const totalNbOfVoxels = stack._dimensionsIJK.x * stack._dimensionsIJK.y * stack._dimensionsIJK.z;
+    const totalNbOfVoxels = stack.dimensionsIJK.x * stack.dimensionsIJK.y * stack.dimensionsIJK.z;
     const f32A = new Float32Array(totalNbOfVoxels);
      for (let i = 0; i < this._stack.frame.length; i++) {
        const frame = stack.frame[i];
