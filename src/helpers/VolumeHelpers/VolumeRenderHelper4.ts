@@ -4,7 +4,7 @@ import { BaseTHREEHelper } from '../BaseTHREEHelper';
 
 const THREE = (window as any).THREE;
 
-export class VolumeRenderHelper extends BaseTHREEHelper {
+export class VolumeRenderHelper4 extends BaseTHREEHelper {
   //#region Variables 
   private _alphaCorrection: number = 0.5;
   private _shininess: number = 10.0;

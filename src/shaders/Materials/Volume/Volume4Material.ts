@@ -1,11 +1,10 @@
 import { MaterialUtils } from "../MaterialUtils";
 
-const vertSource = require('raw-loader!glslify-loader!../webgl/default.vert').default;
-const fragmentSourceIdn = require ('raw-loader!glslify-loader!../webgl/volume/volume_idnInterp.frag').default;
-const fragmentSourceTri = require ('raw-loader!glslify-loader!../webgl/volume/volume_triInterp.frag').default;
+const vertSource = require('raw-loader!glslify-loader!../../webgl/default.vert').default;
+const fragmentSourceTri = require ('raw-loader!glslify-loader!../../webgl/volume4/volume_triInterp4.frag').default;
 
-const vertSourcePP = require('raw-loader!glslify-loader!../webgl/volume4/volume_preProcess.vert').default;
-const fragmentSourcePP = require ('raw-loader!glslify-loader!../webgl/volume/volume_preProcess.frag').default;
+const vertSourcePP = require('raw-loader!glslify-loader!../../webgl/volume4/volume_preProcess.vert').default;
+const fragmentSourcePP = require ('raw-loader!glslify-loader!../../webgl/volume4/volume_preProcess.frag').default;
 
 const THREE = (window as any).THREE;
 
@@ -67,7 +66,6 @@ export class Volume4Material {
      * will always return a mutable clone of the base version
      * of the shader
      */
-    private static _idnMaterial: THREE.ShaderMaterial;
     private static _triMaterial: THREE.ShaderMaterial;
 
     private static _preprocessMaterial: THREE.ShaderMaterial;
@@ -140,19 +138,6 @@ export class Volume4Material {
 
     public static get preProcessDefaultUniforms() {
         return Volume4Material._preProcessDefaultUniforms;
-    }
-
-    public static get idnMaterial(): THREE.ShaderMaterial {
-        if (!Volume4Material._idnMaterial) {
-            Volume4Material._idnMaterial = new THREE.ShaderMaterial({
-                side: THREE.BackSide,
-                transparent: true,
-                uniforms: this.defaultUniforms,
-                vertexShader: MaterialUtils.processSource(vertSource),
-                fragmentShader: MaterialUtils.processSource(fragmentSourceIdn),
-            });
-        }
-        return Volume4Material._idnMaterial.clone();
     }
 
     public static get triMaterial(): THREE.ShaderMaterial {

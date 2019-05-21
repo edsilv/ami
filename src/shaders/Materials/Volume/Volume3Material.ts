@@ -1,8 +1,8 @@
 import { MaterialUtils } from "../MaterialUtils";
 
-const vertSource = require('raw-loader!glslify-loader!../webgl/default.vert').default;
-const fragmentSourceIdn = require ('raw-loader!glslify-loader!../webgl/volume3/volume_idnInterp.frag').default;
-const fragmentSourceTri = require ('raw-loader!glslify-loader!../webgl/volume3/volume_triInterp.frag').default;
+const vertSource = require('raw-loader!glslify-loader!../../webgl/default.vert').default;
+const fragmentSourceIdn = require ('raw-loader!glslify-loader!../../webgl/volume3/volume_idnInterp.frag').default;
+const fragmentSourceTri = require ('raw-loader!glslify-loader!../../webgl/volume3/volume_triInterp.frag').default;
 
 const THREE = (window as any).THREE;
 

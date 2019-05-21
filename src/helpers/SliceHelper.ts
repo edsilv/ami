@@ -241,7 +241,7 @@ export class SliceHelper extends BaseTHREEHelper {
   }
 
   protected _init() {
-    if (!this._stack || !this._stack._prepared || !this._stack._packed) {
+    if (!this._stack || !this._stack.prepared || !this._stack.packed) {
       return;
     }
     if (this._aaBBspace === 'IJK') {
@@ -352,18 +352,18 @@ export class SliceHelper extends BaseTHREEHelper {
     }
     // adding thresholding
     if (this._upperThreshold === null) {
-      this._upperThreshold = this._stack._minMax[1];
+      this._upperThreshold = this._stack.minMax[1];
     }
     if (this._lowerThreshold === null) {
-      this._lowerThreshold = this._stack._minMax[0];
+      this._lowerThreshold = this._stack.minMax[0];
     }
   }
   public UpdateIntensitySettingsUniforms() {
     // compensate for the offset to only pass > 0 values to shaders
     // models > models.stack.js : _packTo8Bits
     let offset = 0;
-    if (this._stack._minMax[0] < 0) {
-      offset -= this._stack._minMax[0];
+    if (this._stack.minMax[0] < 0) {
+      offset -= this._stack.minMax[0];
     }
     // set slice window center and width
     this._material.uniforms.uRescaleSlopeIntercept.value = [this._rescaleSlope, this._rescaleIntercept];

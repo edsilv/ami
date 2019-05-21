@@ -103,7 +103,7 @@ export class LocalizerHelper extends BaseTHREEHelper {
 
   protected _create() {
     this._mesh = new THREE.Mesh(this._geometry, this._material);
-    this._mesh.applyMatrix(this._stack._ijk2LPS);
+    this._mesh.applyMatrix(this._stack.ijk2LPS);
     this.add(this._mesh);
   }
 
