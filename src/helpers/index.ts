@@ -9,8 +9,6 @@ import ProgressBarEventBasedHelper from './ProgressBarEventBasedHelper';
 import {SliceHelper} from './SliceHelper';
 import {StackHelper} from './StackHelper';
 import {VolumeRenderHelper} from './VolumeRenderHelper';
-import {VolumeRenderHelper2} from './VolumeRenderHelper2';
-import {VolumeRenderHelper3} from './VolumeRenderHelper3';
 
 export {
   ContourHelper,
@@ -24,6 +22,4 @@ export {
   SegmentationLutHelper,
   ProgressBarHelper,
   ProgressBarEventBasedHelper,
-  VolumeRenderHelper2,
-  VolumeRenderHelper3
 };
