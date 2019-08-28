@@ -5,9 +5,3 @@ export * from './loaders';
 export * from './models';
 export * from './parsers';
 export * from './shaders';
-
-// import { Raycaster } from 'three/src/core/Raycaster';
-
-// const packageVersion = require('../package.json').version;
-// const d3Version = require('../node_modules/three/package.json').version;
-// window.console.log(`ami ${packageVersion} (three ${d3Version})`);
