@@ -1,11 +1,11 @@
-/** * Imports ***/
+import { RGBAFormat, RGBFormat } from 'three/src/constants';
 import { Matrix4 } from 'three/src/math/Matrix4';
 import { Vector3 } from 'three/src/math/Vector3';
-import { RGBFormat, RGBAFormat } from 'three/src/constants';
 
-import {CoreColors, CoreUtils} from '../core';
+import { CoreColors, CoreUtils } from '../core';
 import BaseModel from './BaseModel';
 
+// tslint:disable-next-line: no-var-requires
 const binaryString = require('math-float32-to-binary-string');
 
 /**
@@ -144,10 +144,10 @@ export default class StackModel extends BaseModel {
    *
    * We currently merge overlaping frames into 1.
    */
-  prepareSegmentation() {
+  public prepareSegmentation() {
     // store frame and do special pre-processing
     this._frameSegment = this._frame;
-    let mergedFrames = [];
+    const mergedFrames = [];
 
     // order frames
     this.computeCosines();
@@ -156,8 +156,9 @@ export default class StackModel extends BaseModel {
 
     // merge frames
     let prevIndex = -1;
+    // tslint:disable-next-line: prefer-for-of
     for (let i = 0; i < this._frame.length; i++) {
-      if (!mergedFrames[prevIndex] || mergedFrames[prevIndex]._dist != this._frame[i]._dist) {
+      if (!mergedFrames[prevIndex] || mergedFrames[prevIndex]._dist !== this._frame[i]._dist) {
         mergedFrames.push(this._frame[i]);
         prevIndex++;
 
@@ -184,12 +185,13 @@ export default class StackModel extends BaseModel {
     }
 
     // get information about segments
-    let dict = {};
+    const dict = {};
     let max = 0;
+    // tslint:disable-next-line: prefer-for-of
     for (let i = 0; i < this._segmentationSegments.length; i++) {
       max = Math.max(max, parseInt(this._segmentationSegments[i].segmentNumber, 10));
 
-      let color = this._segmentationSegments[i].recommendedDisplayCIELab;
+      const color = this._segmentationSegments[i].recommendedDisplayCIELab;
       if (color === null) {
         dict[this._segmentationSegments[i].segmentNumber] = this._segmentationDefaultColor;
       } else {
@@ -199,8 +201,8 @@ export default class StackModel extends BaseModel {
 
     // generate LUTs
     for (let i = 0; i <= max; i++) {
-      let index = i / max;
-      let opacity = i ? 1 : 0;
+      const index = i / max;
+      const opacity = i ? 1 : 0;
       let rgb = [0, 0, 0];
       if (dict.hasOwnProperty(i.toString())) {
         rgb = dict[i.toString()];
@@ -228,7 +230,7 @@ export default class StackModel extends BaseModel {
    *
    * @return {*}
    */
-  prepare() {
+  public prepare() {
     // if segmentation, merge some frames...
     if (this._modality === 'SEG') {
       this.prepareSegmentation();
@@ -303,12 +305,12 @@ export default class StackModel extends BaseModel {
     this._prepared = true;
   }
 
-  packEchos() {
+  public packEchos() {
     // 4 echo times...
-    let echos = 4;
-    let packedEcho = [];
+    const echos = 4;
+    const packedEcho = [];
     for (let i = 0; i < this._frame.length; i += echos) {
-      let frame = this._frame[i];
+      const frame = this._frame[i];
       for (let k = 0; k < this._rows * this._columns; k++) {
         for (let j = 1; j < echos; j++) {
           frame.pixelData[k] += this._frame[i + j].pixelData[k];
@@ -327,7 +329,7 @@ export default class StackModel extends BaseModel {
     );
   }
 
-  computeNumberOfFrames() {
+  public computeNumberOfFrames() {
     // we need at least 1 frame
     if (this._frame && this._frame.length > 0) {
       this._numberOfFrames = this._frame.length;
@@ -339,16 +341,16 @@ export default class StackModel extends BaseModel {
   }
 
   // frame.cosines - returns array [x, y, z]
-  computeCosines() {
+  public computeCosines() {
     if (this._frame && this._frame[0]) {
-      let cosines = this._frame[0].cosines();
+      const cosines = this._frame[0].cosines();
       this._xCosine = cosines[0];
       this._yCosine = cosines[1];
       this._zCosine = cosines[2];
     }
   }
 
-  orderFrames() {
+  public orderFrames() {
     // order the frames based on theirs dimension indices
     // first index is the most important.
     // 1,1,1,1 will be first
@@ -391,7 +393,7 @@ export default class StackModel extends BaseModel {
     }
   }
 
-  computeSpacing() {
+  public computeSpacing() {
     this.xySpacing();
     this.zSpacing();
   }
@@ -399,7 +401,7 @@ export default class StackModel extends BaseModel {
   /**
    * Compute stack z spacing
    */
-  zSpacing() {
+  public zSpacing() {
     if (this._numberOfFrames > 1) {
       if (this._frame[0].pixelSpacing && this._frame[0].pixelSpacing[2]) {
         this._spacing.z = this._frame[0].pixelSpacing[2];
@@ -429,9 +431,9 @@ export default class StackModel extends BaseModel {
   /**
    *  FRAME CAN DO IT
    */
-  xySpacing() {
+  public xySpacing() {
     if (this._frame && this._frame[0]) {
-      let spacingXY = this._frame[0].spacingXY();
+      const spacingXY = this._frame[0].spacingXY();
       this._spacing.x = spacingXY[0];
       this._spacing.y = spacingXY[1];
     }
@@ -440,18 +442,19 @@ export default class StackModel extends BaseModel {
   /**
    * Find min and max intensities among all frames.
    */
-  computeMinMaxIntensities() {
+  public computeMinMaxIntensities() {
     // what about colors!!!!?
     // we ignore values if NaNs
     // https://github.com/FNNDSC/ami/issues/185
+    // tslint:disable-next-line: prefer-for-of
     for (let i = 0; i < this._frame.length; i++) {
       // get min/max
-      let min = this._frame[i].minMax[0];
+      const min = this._frame[i].minMax[0];
       if (!Number.isNaN(min)) {
         this._minMax[0] = Math.min(this._minMax[0], min);
       }
 
-      let max = this._frame[i].minMax[1];
+      const max = this._frame[i].minMax[1];
       if (!Number.isNaN(max)) {
         this._minMax[1] = Math.max(this._minMax[1], max);
       }
@@ -461,7 +464,7 @@ export default class StackModel extends BaseModel {
   /**
    * Compute IJK to LPS and invert transforms
    */
-  computeIJK2LPS() {
+  public computeIJK2LPS() {
     // ijk to lps
     this._ijk2LPS = CoreUtils.ijk2LPS(
       this._xCosine,
@@ -480,7 +483,7 @@ export default class StackModel extends BaseModel {
   /**
    * Compute LPS to AABB and invert transforms
    */
-  computeLPS2AABB() {
+  public computeLPS2AABB() {
     this._aabb2LPS = CoreUtils.aabb2LPS(this._xCosine, this._yCosine, this._zCosine, this._origin);
 
     this._lps2AABB = new Matrix4();
@@ -494,7 +497,7 @@ export default class StackModel extends BaseModel {
    *
    * @return {*}
    */
-  merge(stack) {
+  public merge(stack: any) {
     // also make sure x/y/z cosines are a match!
     if (
       this._stackID === stack.stackID &&
@@ -515,7 +518,7 @@ export default class StackModel extends BaseModel {
   /**
    * Pack current stack pixel data into 8 bits array buffers
    */
-  pack() {
+  public pack() {
     // Get total number of voxels
     const nbVoxels = this._dimensionsIJK.x * this._dimensionsIJK.y * this._dimensionsIJK.z;
 
@@ -571,7 +574,7 @@ export default class StackModel extends BaseModel {
    * @param {*} startVoxel
    * @param {*} stopVoxel
    */
-  _packTo8Bits(channels, frame, textureSize, startVoxel, stopVoxel) {
+  public _packTo8Bits(channels: any, frame: any, textureSize: any, startVoxel: any, stopVoxel: any) {
     const packed = {
       textureType: null,
       data: null,
@@ -593,14 +596,15 @@ export default class StackModel extends BaseModel {
     const frameDimension = frame[0].rows * frame[0].columns;
 
     if ((bitsAllocated === 8 && channels === 1) || bitsAllocated === 1) {
-      let data = new Uint8Array(textureSize * textureSize * 4);
+      const data = new Uint8Array(textureSize * textureSize * 4);
       let coordinate = 0;
       let channelOffset = 0;
       for (let i = startVoxel; i < stopVoxel; i++) {
+        // tslint:disable-next-line: no-bitwise
         frameIndex = ~~(i / frameDimension);
         inFrameIndex = i % frameDimension;
 
-        let raw = frame[frameIndex].pixelData[inFrameIndex] + offset;
+        const raw = frame[frameIndex].pixelData[inFrameIndex] + offset;
         if (!Number.isNaN(raw)) {
           data[4 * coordinate + channelOffset] = raw;
         }
@@ -612,17 +616,20 @@ export default class StackModel extends BaseModel {
       packed.textureType = RGBAFormat;
       packed.data = data;
     } else if (bitsAllocated === 16 && channels === 1) {
-      let data = new Uint8Array(textureSize * textureSize * 4);
+      const data = new Uint8Array(textureSize * textureSize * 4);
       let coordinate = 0;
       let channelOffset = 0;
 
       for (let i = startVoxel; i < stopVoxel; i++) {
+        // tslint:disable-next-line: no-bitwise
         frameIndex = ~~(i / frameDimension);
         inFrameIndex = i % frameDimension;
 
-        let raw = frame[frameIndex].pixelData[inFrameIndex] + offset;
+        const raw = frame[frameIndex].pixelData[inFrameIndex] + offset;
         if (!Number.isNaN(raw)) {
+          // tslint:disable-next-line: no-bitwise
           data[4 * coordinate + 2 * channelOffset] = raw & 0x00ff;
+          // tslint:disable-next-line: no-bitwise
           data[4 * coordinate + 2 * channelOffset + 1] = (raw >>> 8) & 0x00ff;
         }
 
@@ -634,16 +641,21 @@ export default class StackModel extends BaseModel {
       packed.textureType = RGBAFormat;
       packed.data = data;
     } else if (bitsAllocated === 32 && channels === 1 && pixelType === 0) {
-      let data = new Uint8Array(textureSize * textureSize * 4);
+      const data = new Uint8Array(textureSize * textureSize * 4);
       for (let i = startVoxel; i < stopVoxel; i++) {
+        // tslint:disable-next-line: no-bitwise
         frameIndex = ~~(i / frameDimension);
         inFrameIndex = i % frameDimension;
 
-        let raw = frame[frameIndex].pixelData[inFrameIndex] + offset;
+        const raw = frame[frameIndex].pixelData[inFrameIndex] + offset;
         if (!Number.isNaN(raw)) {
+          // tslint:disable-next-line: no-bitwise
           data[4 * packIndex] = raw & 0x000000ff;
+          // tslint:disable-next-line: no-bitwise
           data[4 * packIndex + 1] = (raw >>> 8) & 0x000000ff;
+          // tslint:disable-next-line: no-bitwise
           data[4 * packIndex + 2] = (raw >>> 16) & 0x000000ff;
+          // tslint:disable-next-line: no-bitwise
           data[4 * packIndex + 3] = (raw >>> 24) & 0x000000ff;
         }
 
@@ -652,16 +664,17 @@ export default class StackModel extends BaseModel {
       packed.textureType = RGBAFormat;
       packed.data = data;
     } else if (bitsAllocated === 32 && channels === 1 && pixelType === 1) {
-      let data = new Uint8Array(textureSize * textureSize * 4);
+      const data = new Uint8Array(textureSize * textureSize * 4);
 
       for (let i = startVoxel; i < stopVoxel; i++) {
+        // tslint:disable-next-line: no-bitwise
         frameIndex = ~~(i / frameDimension);
         inFrameIndex = i % frameDimension;
 
-        let raw = frame[frameIndex].pixelData[inFrameIndex] + offset;
+        const raw = frame[frameIndex].pixelData[inFrameIndex] + offset;
         if (!Number.isNaN(raw)) {
-          let bitString = binaryString(raw);
-          let bitStringArray = bitString.match(/.{1,8}/g);
+          const bitString = binaryString(raw);
+          const bitStringArray = bitString.match(/.{1,8}/g);
 
           data[4 * packIndex] = parseInt(bitStringArray[0], 2);
           data[4 * packIndex + 1] = parseInt(bitStringArray[1], 2);
@@ -675,9 +688,10 @@ export default class StackModel extends BaseModel {
       packed.textureType = RGBAFormat;
       packed.data = data;
     } else if (bitsAllocated === 8 && channels === 3) {
-      let data = new Uint8Array(textureSize * textureSize * 3);
+      const data = new Uint8Array(textureSize * textureSize * 3);
 
       for (let i = startVoxel; i < stopVoxel; i++) {
+        // tslint:disable-next-line: no-bitwise
         frameIndex = ~~(i / frameDimension);
         inFrameIndex = i % frameDimension;
 
@@ -697,10 +711,10 @@ export default class StackModel extends BaseModel {
   /**
    * Get the stack world center
    *
-   *@return {*}
+   * @return {*}
    */
-  worldCenter() {
-    let center = this._halfDimensionsIJK
+  public worldCenter() {
+    const center = this._halfDimensionsIJK
       .clone()
       .addScalar(-0.5)
       .applyMatrix4(this._ijk2LPS);
@@ -711,7 +725,7 @@ export default class StackModel extends BaseModel {
    * Get the stack world bounding box
    * @return {*}
    */
-  worldBoundingBox() {
+  public worldBoundingBox() {
     let bbox = [
       Number.POSITIVE_INFINITY,
       Number.NEGATIVE_INFINITY,
@@ -726,7 +740,7 @@ export default class StackModel extends BaseModel {
     for (let i = 0; i <= dims.x; i += dims.x) {
       for (let j = 0; j <= dims.y; j += dims.y) {
         for (let k = 0; k <= dims.z; k += dims.z) {
-          let world = new Vector3(i, j, k).applyMatrix4(this._ijk2LPS);
+          const world = new Vector3(i, j, k).applyMatrix4(this._ijk2LPS);
           bbox = [
             Math.min(bbox[0], world.x),
             Math.max(bbox[1], world.x), // x min/max
@@ -747,19 +761,19 @@ export default class StackModel extends BaseModel {
    *
    * @return {*}
    */
-  AABBox() {
-    let world0 = new Vector3()
+  public AABBox() {
+    const world0 = new Vector3()
       .addScalar(-0.5)
       .applyMatrix4(this._ijk2LPS)
       .applyMatrix4(this._lps2AABB);
 
-    let world7 = this._dimensionsIJK
+    const world7 = this._dimensionsIJK
       .clone()
       .addScalar(-0.5)
       .applyMatrix4(this._ijk2LPS)
       .applyMatrix4(this._lps2AABB);
 
-    let minBBox = new Vector3(
+    const minBBox = new Vector3(
       Math.abs(world0.x - world7.x),
       Math.abs(world0.y - world7.y),
       Math.abs(world0.z - world7.z)
@@ -771,13 +785,13 @@ export default class StackModel extends BaseModel {
   /**
    * Get AABB center in LPS space
    */
-  centerAABBox() {
-    let centerBBox = this.worldCenter();
+  public centerAABBox() {
+    const centerBBox = this.worldCenter();
     centerBBox.applyMatrix4(this._lps2AABB);
     return centerBBox;
   }
 
-  static indexInDimensions(index, dimensions) {
+  public static indexInDimensions(index: any, dimensions: any) {
     if (
       index.x >= 0 &&
       index.y >= 0 &&
@@ -792,11 +806,11 @@ export default class StackModel extends BaseModel {
     return false;
   }
 
-  _arrayToVector3(array, index) {
+  public _arrayToVector3(array: any, index: any) {
     return new Vector3(array[index], array[index + 1], array[index + 2]);
   }
 
-  _orderFrameOnDimensionIndicesArraySort(a, b) {
+  public _orderFrameOnDimensionIndicesArraySort(a: any, b: any) {
     if (
       'dimensionIndexValues' in a &&
       Object.prototype.toString.call(a.dimensionIndexValues) === '[object Array]' &&
@@ -820,7 +834,7 @@ export default class StackModel extends BaseModel {
     return 0;
   }
 
-  _computeDistanceArrayMap(normal, frame) {
+  public _computeDistanceArrayMap(normal: any, frame: any) {
     if (frame.imagePosition) {
       frame.dist =
         frame.imagePosition[0] * normal.x +
@@ -830,17 +844,17 @@ export default class StackModel extends BaseModel {
     return frame;
   }
 
-  _sortDistanceArraySort(a, b) {
+  public _sortDistanceArraySort(a: any, b: any) {
     return a.dist - b.dist;
   }
-  _sortInstanceNumberArraySort(a, b) {
+  public _sortInstanceNumberArraySort(a: any, b: any) {
     return a.instanceNumber - b.instanceNumber;
   }
-  _sortSopInstanceUIDArraySort(a, b) {
+  public _sortSopInstanceUIDArraySort(a: any, b: any) {
     return a.sopInstanceUID - b.sopInstanceUID;
   }
 
-  set numberOfChannels(numberOfChannels) {
+  set numberOfChannels(numberOfChannels: any) {
     this._numberOfChannels = numberOfChannels;
   }
 
@@ -848,7 +862,7 @@ export default class StackModel extends BaseModel {
     return this._numberOfChannels;
   }
 
-  set frame(frame) {
+  set frame(frame: any) {
     this._frame = frame;
   }
 
@@ -856,7 +870,7 @@ export default class StackModel extends BaseModel {
     return this._frame;
   }
 
-  set prepared(prepared) {
+  set prepared(prepared: any) {
     this._prepared = prepared;
   }
 
@@ -864,7 +878,7 @@ export default class StackModel extends BaseModel {
     return this._prepared;
   }
 
-  set packed(packed) {
+  set packed(packed: any) {
     this._packed = packed;
   }
 
@@ -872,7 +886,7 @@ export default class StackModel extends BaseModel {
     return this._packed;
   }
 
-  set packedPerPixel(packedPerPixel) {
+  set packedPerPixel(packedPerPixel: any) {
     this._packedPerPixel = packedPerPixel;
   }
 
@@ -880,7 +894,7 @@ export default class StackModel extends BaseModel {
     return this._packedPerPixel;
   }
 
-  set dimensionsIJK(dimensionsIJK) {
+  set dimensionsIJK(dimensionsIJK: any) {
     this._dimensionsIJK = dimensionsIJK;
   }
 
@@ -888,7 +902,7 @@ export default class StackModel extends BaseModel {
     return this._dimensionsIJK;
   }
 
-  set halfDimensionsIJK(halfDimensionsIJK) {
+  set halfDimensionsIJK(halfDimensionsIJK: any) {
     this._halfDimensionsIJK = halfDimensionsIJK;
   }
 
@@ -896,7 +910,7 @@ export default class StackModel extends BaseModel {
     return this._halfDimensionsIJK;
   }
 
-  set regMatrix(regMatrix) {
+  set regMatrix(regMatrix: any) {
     this._regMatrix = regMatrix;
   }
 
@@ -904,7 +918,7 @@ export default class StackModel extends BaseModel {
     return this._regMatrix;
   }
 
-  set ijk2LPS(ijk2LPS) {
+  set ijk2LPS(ijk2LPS: any) {
     this._ijk2LPS = ijk2LPS;
   }
 
@@ -912,7 +926,7 @@ export default class StackModel extends BaseModel {
     return this._ijk2LPS;
   }
 
-  set lps2IJK(lps2IJK) {
+  set lps2IJK(lps2IJK: any) {
     this._lps2IJK = lps2IJK;
   }
 
@@ -920,7 +934,7 @@ export default class StackModel extends BaseModel {
     return this._lps2IJK;
   }
 
-  set lps2AABB(lps2AABB) {
+  set lps2AABB(lps2AABB: any) {
     this._lps2AABB = lps2AABB;
   }
 
@@ -928,7 +942,7 @@ export default class StackModel extends BaseModel {
     return this._lps2AABB;
   }
 
-  set textureSize(textureSize) {
+  set textureSize(textureSize: any) {
     this._textureSize = textureSize;
   }
 
@@ -936,7 +950,7 @@ export default class StackModel extends BaseModel {
     return this._textureSize;
   }
 
-  set textureUnits(textureUnits) {
+  set textureUnits(textureUnits: any) {
     this._textureUnits = textureUnits;
   }
 
@@ -944,7 +958,7 @@ export default class StackModel extends BaseModel {
     return this._textureUnits;
   }
 
-  set textureType(textureType) {
+  set textureType(textureType: any) {
     this._textureType = textureType;
   }
 
@@ -952,7 +966,7 @@ export default class StackModel extends BaseModel {
     return this._textureType;
   }
 
-  set bitsAllocated(bitsAllocated) {
+  set bitsAllocated(bitsAllocated: any) {
     this._bitsAllocated = bitsAllocated;
   }
 
@@ -960,7 +974,7 @@ export default class StackModel extends BaseModel {
     return this._bitsAllocated;
   }
 
-  set rawData(rawData) {
+  set rawData(rawData: any) {
     this._rawData = rawData;
   }
 
@@ -972,7 +986,7 @@ export default class StackModel extends BaseModel {
     return this._windowWidth;
   }
 
-  set windowWidth(windowWidth) {
+  set windowWidth(windowWidth: any) {
     this._windowWidth = windowWidth;
   }
 
@@ -980,7 +994,7 @@ export default class StackModel extends BaseModel {
     return this._windowCenter;
   }
 
-  set windowCenter(windowCenter) {
+  set windowCenter(windowCenter: any) {
     this._windowCenter = windowCenter;
   }
 
@@ -988,7 +1002,7 @@ export default class StackModel extends BaseModel {
     return this._rescaleSlope;
   }
 
-  set rescaleSlope(rescaleSlope) {
+  set rescaleSlope(rescaleSlope: any) {
     this._rescaleSlope = rescaleSlope;
   }
 
@@ -996,7 +1010,7 @@ export default class StackModel extends BaseModel {
     return this._rescaleIntercept;
   }
 
-  set rescaleIntercept(rescaleIntercept) {
+  set rescaleIntercept(rescaleIntercept: any) {
     this._rescaleIntercept = rescaleIntercept;
   }
 
@@ -1004,7 +1018,7 @@ export default class StackModel extends BaseModel {
     return this._xCosine;
   }
 
-  set xCosine(xCosine) {
+  set xCosine(xCosine: any) {
     this._xCosine = xCosine;
   }
 
@@ -1012,7 +1026,7 @@ export default class StackModel extends BaseModel {
     return this._yCosine;
   }
 
-  set yCosine(yCosine) {
+  set yCosine(yCosine: any) {
     this._yCosine = yCosine;
   }
 
@@ -1020,7 +1034,7 @@ export default class StackModel extends BaseModel {
     return this._zCosine;
   }
 
-  set zCosine(zCosine) {
+  set zCosine(zCosine: any) {
     this._zCosine = zCosine;
   }
 
@@ -1028,7 +1042,7 @@ export default class StackModel extends BaseModel {
     return this._minMax;
   }
 
-  set minMax(minMax) {
+  set minMax(minMax: any) {
     this._minMax = minMax;
   }
 
@@ -1036,7 +1050,7 @@ export default class StackModel extends BaseModel {
     return this._stackID;
   }
 
-  set stackID(stackID) {
+  set stackID(stackID: any) {
     this._stackID = stackID;
   }
 
@@ -1044,7 +1058,7 @@ export default class StackModel extends BaseModel {
     return this._pixelType;
   }
 
-  set pixelType(pixelType) {
+  set pixelType(pixelType: any) {
     this._pixelType = pixelType;
   }
 
@@ -1052,11 +1066,11 @@ export default class StackModel extends BaseModel {
     return this._pixelRepresentation;
   }
 
-  set pixelRepresentation(pixelRepresentation) {
+  set pixelRepresentation(pixelRepresentation: any) {
     this._pixelRepresentation = pixelRepresentation;
   }
 
-  set invert(invert) {
+  set invert(invert: any) {
     this._invert = invert;
   }
 
@@ -1064,7 +1078,7 @@ export default class StackModel extends BaseModel {
     return this._invert;
   }
 
-  set modality(modality) {
+  set modality(modality: any) {
     this._modality = modality;
   }
 
@@ -1076,7 +1090,7 @@ export default class StackModel extends BaseModel {
     return this._rightHanded;
   }
 
-  set rightHanded(rightHanded) {
+  set rightHanded(rightHanded: any) {
     this._rightHanded = rightHanded;
   }
 
@@ -1084,11 +1098,11 @@ export default class StackModel extends BaseModel {
     return this._spacingBetweenSlices;
   }
 
-  set spacingBetweenSlices(spacingBetweenSlices) {
+  set spacingBetweenSlices(spacingBetweenSlices: any) {
     this._spacingBetweenSlices = spacingBetweenSlices;
   }
 
-  set segmentationSegments(segmentationSegments) {
+  set segmentationSegments(segmentationSegments: any) {
     this._segmentationSegments = segmentationSegments;
   }
 
@@ -1096,7 +1110,7 @@ export default class StackModel extends BaseModel {
     return this._segmentationSegments;
   }
 
-  set segmentationType(segmentationType) {
+  set segmentationType(segmentationType: any) {
     this._segmentationType = segmentationType;
   }
 
@@ -1104,7 +1118,7 @@ export default class StackModel extends BaseModel {
     return this._segmentationType;
   }
 
-  set segmentationLUT(segmentationLUT) {
+  set segmentationLUT(segmentationLUT: any) {
     this._segmentationLUT = segmentationLUT;
   }
 
@@ -1112,7 +1126,7 @@ export default class StackModel extends BaseModel {
     return this._segmentationLUT;
   }
 
-  set segmentationLUTO(segmentationLUTO) {
+  set segmentationLUTO(segmentationLUTO: any) {
     this._segmentationLUTO = segmentationLUTO;
   }
 
@@ -1132,7 +1146,7 @@ export default class StackModel extends BaseModel {
    *
    * @return {*}
    */
-  static value(stack, coordinate) {
+  public static value(stack: any, coordinate: any) {
     window.console.warn(
       `models.stack.value is deprecated.
        Please use core.utils.value instead.`
@@ -1151,7 +1165,7 @@ export default class StackModel extends BaseModel {
    *
    * @return {*}
    */
-  static valueRescaleSlopeIntercept(value, slope, intercept) {
+  public static valueRescaleSlopeIntercept(value: any, slope: any, intercept: any) {
     window.console.warn(
       `models.stack.valueRescaleSlopeIntercept is deprecated.
        Please use core.utils.rescaleSlopeIntercept instead.`
@@ -1169,7 +1183,7 @@ export default class StackModel extends BaseModel {
    *
    * @return {*}
    */
-  static worldToData(stack, worldCoordinates) {
+  public static worldToData(stack: any, worldCoordinates: any) {
     window.console.warn(
       `models.stack.worldToData is deprecated.
        Please use core.utils.worldToData instead.`

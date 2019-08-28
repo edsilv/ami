@@ -1,16 +1,16 @@
-/** * Imports ***/
+// tslint:disable-next-line: no-var-requires
 const PAKO = require('pako');
 
-import BaseLoader from './BaseLoader';
-import {CoreUtils} from '../core'
+import { CoreUtils } from '../core';
+import FrameModel from '../models/FrameModel';
 import SeriesModel from '../models/SeriesModel';
 import StackModel from '../models/StackModel';
-import FrameModel from '../models/FrameModel';
 import AMIDicomParser from '../parsers/DicomParser';
-import ParsersMhd from '../parsers/MHDParser';
-import NiftiParser from '../parsers/NiftiParser';
-import ParsersNrrd from '../parsers/NrrdParser';
-import MghParser from '../parsers/MghParser';
+// import MghParser from '../parsers/MghParser';
+// import ParsersMhd from '../parsers/MHDParser';
+// import NiftiParser from '../parsers/NiftiParser';
+// import ParsersNrrd from '../parsers/NrrdParser';
+import BaseLoader from './BaseLoader';
 
 /**
  *
@@ -48,7 +48,7 @@ export default class VolumeLoader extends BaseLoader {
    * @param {object} response - response
    * @return {promise} promise
    */
-  parse(response) {
+  public parse(response: any) {
     // emit 'parse-start' event
     this.emit('parse-start', {
       file: response.url,
@@ -65,7 +65,8 @@ export default class VolumeLoader extends BaseLoader {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         resolve(
-          new Promise((resolve, reject) => {
+          // tslint:disable-next-line: no-shadowed-variable
+          new Promise((resolve: any, reject: any) => {
             let data = response;
 
             if (!Array.isArray(data)) {
@@ -80,8 +81,8 @@ export default class VolumeLoader extends BaseLoader {
               data = data[0];
             } else {
               // if raw/mhd pair
-              let mhdFile = data.filter(this._filterByExtension.bind(null, 'MHD'));
-              let rawFile = data.filter(this._filterByExtension.bind(null, 'RAW'));
+              const mhdFile = data.filter(this._filterByExtension.bind(null, 'MHD'));
+              const rawFile = data.filter(this._filterByExtension.bind(null, 'RAW'));
               if (data.length === 2 && mhdFile.length === 1 && rawFile.length === 1) {
                 data.url = mhdFile[0].url;
                 data.extension = mhdFile[0].extension;
@@ -90,7 +91,7 @@ export default class VolumeLoader extends BaseLoader {
               }
             }
 
-            let Parser = this._parser(data.extension);
+            const Parser = this._parser(data.extension);
             if (!Parser) {
               // emit 'parse-error' event
               this.emit('parse-error', {
@@ -117,7 +118,7 @@ export default class VolumeLoader extends BaseLoader {
             }
 
             // create a series
-            let series = new SeriesModel();
+            const series = new SeriesModel();
             // global information
             series.seriesInstanceUID = volumeParser.seriesInstanceUID();
             series.transferSyntaxUID = volumeParser.transferSyntaxUID();
@@ -147,7 +148,7 @@ export default class VolumeLoader extends BaseLoader {
             series.patientSex = volumeParser.patientSex();
 
             // just create 1 dummy stack for now
-            let stack = new StackModel();
+            const stack = new StackModel();
             stack.numberOfChannels = volumeParser.numberOfChannels();
             stack.pixelRepresentation = volumeParser.pixelRepresentation();
             stack.pixelType = volumeParser.pixelType();
@@ -176,7 +177,15 @@ export default class VolumeLoader extends BaseLoader {
     });
   }
 
-  parseFrameClosure(series, stack, url, i, dataParser, resolve, reject) {
+  public parseFrameClosure(
+    series: any,
+    stack: any,
+    url: any,
+    i: any,
+    dataParser: any,
+    resolve: any,
+    reject: any
+  ) {
     return () => {
       this.parseFrame(series, stack, url, i, dataParser, resolve, reject);
     };
@@ -192,8 +201,16 @@ export default class VolumeLoader extends BaseLoader {
    * @param {promise.resolve} resolve - promise resolve args
    * @param {promise.reject} reject - promise reject args
    */
-  parseFrame(series, stack, url, i, dataParser, resolve, reject) {
-    let frame = new FrameModel();
+  public parseFrame(
+    series: any,
+    stack: any,
+    url: any,
+    i: any,
+    dataParser: any,
+    resolve: any,
+    reject: any
+  ) {
+    const frame = new FrameModel();
     frame.sopInstanceUID = dataParser.sopInstanceUID(i);
     frame.url = url;
     frame.index = i;
@@ -279,13 +296,15 @@ export default class VolumeLoader extends BaseLoader {
    * @param {string} extension - extension
    * @return {parser} selected parser
    */
-  _parser(extension) {
+  public _parser(extension: any) {
     let Parser = null;
 
     switch (extension.toUpperCase()) {
       case 'NII':
       case 'NII_':
-        Parser = NiftiParser;
+        // Parser = NiftiParser;
+        // tslint:disable-next-line: no-console
+        console.error('Support for .Nifti removed in this build!');
         break;
       case 'DCM':
       case 'DIC':
@@ -295,14 +314,20 @@ export default class VolumeLoader extends BaseLoader {
         Parser = AMIDicomParser;
         break;
       case 'MHD':
-        Parser = ParsersMhd;
+        // Parser = ParsersMhd;
+        // tslint:disable-next-line: no-console
+        console.error('Support for .Mhd removed in this build!');
         break;
       case 'NRRD':
-        Parser = ParsersNrrd;
+        // Parser = ParsersNrrd;
+        // tslint:disable-next-line: no-console
+        console.error('Support for .Nrrd removed in this build!');
         break;
       case 'MGH':
       case 'MGZ':
-        Parser = MghParser;
+        // Parser = MghParser;
+        // tslint:disable-next-line: no-console
+        console.error('Support for .Mgh removed in this build!');
         break;
       default:
         console.warn('unsupported extension: ' + extension);
@@ -315,7 +340,7 @@ export default class VolumeLoader extends BaseLoader {
    * Pre-process data to be parsed (find data type and de-compress)
    * @param {*} data
    */
-  _preprocess(data) {
+  public _preprocess(data: any) {
     const parsedUrl = CoreUtils.parseUrl(data.url);
     // update data
     data.filename = parsedUrl.filename;
@@ -342,7 +367,7 @@ export default class VolumeLoader extends BaseLoader {
     }
 
     if (data.gzcompressed) {
-      let decompressedData = PAKO.inflate(data.buffer);
+      const decompressedData = PAKO.inflate(data.buffer);
       data.buffer = decompressedData.buffer;
     }
   }
@@ -353,7 +378,7 @@ export default class VolumeLoader extends BaseLoader {
    * @param {*} item
    * @returns Boolean
    */
-  _filterByExtension(extension, item) {
+  public _filterByExtension(extension: any, item: any) {
     if (item.extension.toUpperCase() === extension.toUpperCase()) {
       return true;
     }

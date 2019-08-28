@@ -2,98 +2,109 @@
  * @module parsers/volume
  */
 export default class VolumeParser {
-  _rightHanded: boolean;
-  
+  public _rightHanded: boolean;
+
   constructor() {
     this._rightHanded = true;
   }
 
-  pixelRepresentation() {
+  public pixelRepresentation() {
     return 0;
   }
 
-  pixelPaddingValue(frameIndex = 0) {
+  public pixelPaddingValue(_frameIndex: number = 0) {
     return null;
   }
 
-  modality() {
+  public modality() {
     return 'unknown';
   }
 
-  segmentationType() {
+  public segmentationType() {
     return 'unknown';
   }
 
-  segmentationSegments() {
+  public segmentationSegments() {
     return [];
   }
 
-  referencedSegmentNumber(frameIndex) {
+  public referencedSegmentNumber(_frameIndex: number) {
     return -1;
   }
 
-  rightHanded() {
+  public rightHanded() {
     return this._rightHanded;
   }
 
-  spacingBetweenSlices() {
+  public spacingBetweenSlices() {
     return null;
   }
 
-  numberOfChannels() {
+  public numberOfChannels() {
     return 1;
   }
 
-  sliceThickness() {
+  public sliceThickness() {
     return null;
   }
 
-  dimensionIndexValues(frameIndex = 0) {
+  public dimensionIndexValues(_frameIndex: number = 0) {
     return null;
   }
 
-  instanceNumber(frameIndex = 0) {
+  public instanceNumber(frameIndex: number = 0) {
     return frameIndex;
   }
 
-  windowCenter(frameIndex = 0) {
+  public windowCenter(_frameIndex: number = 0) {
     return null;
   }
 
-  windowWidth(frameIndex = 0) {
+  public windowWidth(_frameIndex: number = 0) {
     return null;
   }
 
-  rescaleSlope(frameIndex = 0) {
+  public rescaleSlope(_frameIndex: number = 0) {
     return 1;
   }
 
-  rescaleIntercept(frameIndex = 0) {
+  public rescaleIntercept(_frameIndex: number = 0) {
     return 0;
   }
 
-  ultrasoundRegions(frameIndex = 0) {
+  public ultrasoundRegions(_frameIndex: number = 0) {
     return [];
   }
 
-  frameTime(frameIndex = 0) {
+  public frameTime(_frameIndex: number = 0) {
     return null;
   }
 
-  _decompressUncompressed() {}
+  // tslint:disable-next-line: no-empty
+  public _decompressUncompressed() {}
 
   // http://stackoverflow.com/questions/5320439/how-do-i-swap-endian-ness-byte-order-of-a-variable-in-javascript
-  _swap16(val) {
+  // tslint:disable-next-line: no-any
+  public _swap16(val: any) {
+    // tslint:disable-next-line: no-bitwise
     return ((val & 0xff) << 8) | ((val >> 8) & 0xff);
   }
 
-  _swap32(val) {
+  // tslint:disable-next-line: no-any
+  public _swap32(val: any) {
     return (
-      ((val & 0xff) << 24) | ((val & 0xff00) << 8) | ((val >> 8) & 0xff00) | ((val >> 24) & 0xff)
+      // tslint:disable-next-line: no-bitwise
+      ((val & 0xff) << 24) |
+      // tslint:disable-next-line: no-bitwise
+      ((val & 0xff00) << 8) |
+      // tslint:disable-next-line: no-bitwise
+      ((val >> 8) & 0xff00) |
+      // tslint:disable-next-line: no-bitwise
+      ((val >> 24) & 0xff)
     );
   }
 
-  invert() {
+  public invert() {
     return false;
   }
 
@@ -101,7 +112,7 @@ export default class VolumeParser {
    * Get the transfer syntax UID.
    * @return {*}
    */
-  transferSyntaxUID() {
+  public transferSyntaxUID() {
     return 'no value provided';
   }
 
@@ -109,7 +120,7 @@ export default class VolumeParser {
    * Get the study date.
    * @return {*}
    */
-  studyDate() {
+  public studyDate() {
     return 'no value provided';
   }
 
@@ -117,7 +128,7 @@ export default class VolumeParser {
    * Get the study desciption.
    * @return {*}
    */
-  studyDescription() {
+  public studyDescription() {
     return 'no value provided';
   }
 
@@ -125,7 +136,7 @@ export default class VolumeParser {
    * Get the series date.
    * @return {*}
    */
-  seriesDate() {
+  public seriesDate() {
     return 'no value provided';
   }
 
@@ -133,7 +144,7 @@ export default class VolumeParser {
    * Get the series desciption.
    * @return {*}
    */
-  seriesDescription() {
+  public seriesDescription() {
     return 'no value provided';
   }
 
@@ -141,7 +152,7 @@ export default class VolumeParser {
    * Get the patient ID.
    * @return {*}
    */
-  patientID() {
+  public patientID() {
     return 'no value provided';
   }
 
@@ -149,7 +160,7 @@ export default class VolumeParser {
    * Get the patient name.
    * @return {*}
    */
-  patientName() {
+  public patientName() {
     return 'no value provided';
   }
 
@@ -157,7 +168,7 @@ export default class VolumeParser {
    * Get the patient age.
    * @return {*}
    */
-  patientAge() {
+  public patientAge() {
     return 'no value provided';
   }
 
@@ -165,7 +176,7 @@ export default class VolumeParser {
    * Get the patient birthdate.
    * @return {*}
    */
-  patientBirthdate() {
+  public patientBirthdate() {
     return 'no value provided';
   }
 
@@ -173,7 +184,7 @@ export default class VolumeParser {
    * Get the patient sex.
    * @return {*}
    */
-  patientSex() {
+  public patientSex() {
     return 'no value provided';
   }
 
@@ -184,11 +195,12 @@ export default class VolumeParser {
    *
    * @return {*}
    */
-  minMaxPixelData(pixelData = []) {
-    let minMax = [Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY];
-    let numPixels = pixelData.length;
+  // tslint:disable-next-line: no-any
+  public minMaxPixelData(pixelData: any = []) {
+    const minMax = [Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY];
+    const numPixels = pixelData.length;
     for (let index = 0; index < numPixels; index++) {
-      let spv = pixelData[index];
+      const spv = pixelData[index];
       minMax[0] = Math.min(minMax[0], spv);
       minMax[1] = Math.max(minMax[1], spv);
     }

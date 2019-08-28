@@ -1,4 +1,3 @@
- 
 import { isNull } from 'util';
 import Validators from './CoreValidators';
 
@@ -31,7 +30,7 @@ export default class CoreUtils {
    *
    */
   // tslint:disable-next-line:typedef
-  public static bbox(center, halfDimensions): {min: THREE.Vector3, max: THREE.Vector3} | false {
+  public static bbox(center, halfDimensions): { min: THREE.Vector3; max: THREE.Vector3 } | false {
     // make sure we have valid inputs
     if (!(Validators.vector3(center) && Validators.vector3(halfDimensions))) {
       window.console.log('Invalid center or plane halfDimensions.');
@@ -182,7 +181,14 @@ export default class CoreUtils {
    * @return {*}
    */
   // tslint:disable-next-line:typedef
-  public static ijk2LPS(xCos, yCos, zCos, spacing, origin, registrationMatrix = new THREE.Matrix4()) {
+  public static ijk2LPS(
+    xCos: any,
+    yCos: any,
+    zCos: any,
+    spacing: any,
+    origin: any,
+    registrationMatrix: any = new THREE.Matrix4()
+  ) {
     const ijk2LPS = new THREE.Matrix4();
     ijk2LPS.set(
       xCos.x * spacing.y,
@@ -365,16 +371,16 @@ export default class CoreUtils {
     points.forEach(element => {
       const point = {
         position: new THREE.Vector3(element.x, element.y, element.z),
-        direction:  new THREE.Vector3(
+        direction: new THREE.Vector3(
           element.x - reference.x,
           element.y - reference.y,
           element.z - reference.z
         ).normalize(),
         xy: {
           x: 0,
-          y: 0
+          y: 0,
         },
-        angle: 0
+        angle: 0,
       };
 
       const x = referenceDirection.dot(point.direction);
@@ -384,7 +390,7 @@ export default class CoreUtils {
       const theta = Math.atan2(y, x) * (180 / Math.PI);
       point.angle = theta;
 
-      orderedpoints.push(point); 
+      orderedpoints.push(point);
     });
 
     orderedpoints.sort((a, b) => {
@@ -493,7 +499,7 @@ export default class CoreUtils {
     let area = 0.0;
     const vertices = geometry.vertices;
 
-    geometry.faces.forEach((elem) => {
+    geometry.faces.forEach(elem => {
       area += new THREE.Triangle(vertices[elem.a], vertices[elem.b], vertices[elem.c]).getArea();
     });
 

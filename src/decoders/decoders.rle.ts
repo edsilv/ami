@@ -1,6 +1,7 @@
 // from dicom wadoo loader
 // https://github.com/cornerstonejs/cornerstoneWADOImageLoader/blob/master/src/shared/decoders/decodeRLE.js
-function decodeRLE(imageFrame, pixelData) {
+// tslint:disable-next-line: no-any
+function decodeRLE(imageFrame: any, pixelData: any) {
   if (imageFrame.bitsAllocated === 8) {
     if (imageFrame.planarConfiguration) {
       return decode8Planar(imageFrame, pixelData);
@@ -14,7 +15,8 @@ function decodeRLE(imageFrame, pixelData) {
   throw new Error('unsupported pixel format for RLE');
 }
 
-function decode8(imageFrame, pixelData) {
+// tslint:disable-next-line: no-any
+function decode8(imageFrame: any, pixelData: any) {
   const frameData = pixelData;
   const frameSize = imageFrame.rows * imageFrame.columns;
   const outFrame = new ArrayBuffer(frameSize * imageFrame.samplesPerPixel);
@@ -63,7 +65,7 @@ function decode8(imageFrame, pixelData) {
   return imageFrame;
 }
 
-function decode8Planar(imageFrame, pixelData) {
+function decode8Planar(imageFrame: any, pixelData: any) {
   const frameData = pixelData;
   const frameSize = imageFrame.rows * imageFrame.columns;
   const outFrame = new ArrayBuffer(frameSize * imageFrame.samplesPerPixel);
@@ -112,7 +114,7 @@ function decode8Planar(imageFrame, pixelData) {
   return imageFrame;
 }
 
-function decode16(imageFrame, pixelData) {
+function decode16(imageFrame: any, pixelData: any) {
   const frameData = pixelData;
   const frameSize = imageFrame.rows * imageFrame.columns;
 

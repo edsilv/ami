@@ -8,12 +8,10 @@
     "three.js",
     "webgl",
     "dicom",
-    "nifti",
     "awesome",
     "medical",
     "imaging",
     "xtk",
-    "nrrd",
     "vtk",
     "stl",
     "trk"

@@ -1,4 +1,3 @@
- 
 const THREE = (window as any).THREE;
 
 /**
@@ -12,8 +11,8 @@ export default class BoundingBoxHelper extends THREE.Object3D {
   private _meshStack: any;
   private _visible: boolean;
   private _color: number;
-  
-  constructor(stack) {
+
+  constructor(stack: any) {
     super();
 
     // private vars
@@ -30,7 +29,7 @@ export default class BoundingBoxHelper extends THREE.Object3D {
   }
 
   // getters/setters
-  set visible(visible) {
+  set visible(visible: any) {
     this._visible = visible;
     if (this._mesh) {
       this._mesh.visible = this.visible;
@@ -41,7 +40,7 @@ export default class BoundingBoxHelper extends THREE.Object3D {
     return this._visible;
   }
 
-  set color(color) {
+  set color(color: any) {
     this._color = color;
     if (this._material) {
       this._material.color.set(this._color);
@@ -53,7 +52,7 @@ export default class BoundingBoxHelper extends THREE.Object3D {
   }
 
   // private methods
-  _create() {
+  private _create() {
     // Convenience vars
     const dimensions = this._stack.dimensionsIJK;
     const halfDimensions = this._stack.halfDimensionsIJK;
@@ -86,7 +85,7 @@ export default class BoundingBoxHelper extends THREE.Object3D {
     this.add(this._mesh);
   }
 
-  _update() {
+  private _update() {
     if (this._mesh) {
       this.remove(this._mesh);
       this._mesh.geometry.dispose();
@@ -99,7 +98,7 @@ export default class BoundingBoxHelper extends THREE.Object3D {
     this._create();
   }
 
-  dispose() {
+  public dispose() {
     this._mesh.material.dispose();
     this._mesh.material = null;
     this._geometry.dispose();

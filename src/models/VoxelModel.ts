@@ -15,7 +15,7 @@ export default class VoxelModel extends BaseModel {
     this.value = null;
   }
 
-  set worldCoordinates(worldCoordinates) {
+  set worldCoordinates(worldCoordinates: any) {
     this.worldCoordinates = worldCoordinates;
   }
 
@@ -23,7 +23,7 @@ export default class VoxelModel extends BaseModel {
     return this.worldCoordinates;
   }
 
-  set dataCoordinates(dataCoordinates) {
+  set dataCoordinates(dataCoordinates: any) {
     this.dataCoordinates = dataCoordinates;
   }
 
@@ -31,7 +31,7 @@ export default class VoxelModel extends BaseModel {
     return this.dataCoordinates;
   }
 
-  set screenCoordinates(screenCoordinates) {
+  set screenCoordinates(screenCoordinates: any) {
     this.screenCoordinates = screenCoordinates;
   }
 
@@ -39,7 +39,7 @@ export default class VoxelModel extends BaseModel {
     return this.screenCoordinates;
   }
 
-  set value(value) {
+  set value(value: any) {
     this.value = value;
   }
 
@@ -47,7 +47,7 @@ export default class VoxelModel extends BaseModel {
     return this.value;
   }
 
-  set _id(_id) {
+  set _id(_id: any) {
     this._id = _id;
   }
 

@@ -1,14 +1,12 @@
- 
-
 /**
  * @module geometries/voxel
  */
 
 const THREE = (window as any).THREE;
- export default class VoxelGeometry extends THREE.BoxGeometry {
-   private _location: THREE.Vector3;
+export default class VoxelGeometry extends THREE.BoxGeometry {
+  private _location: THREE.Vector3;
 
-   constructor(dataPosition: THREE.Vector3) {
+  constructor(dataPosition: THREE.Vector3) {
     super(1, 1, 1);
 
     this._location = new THREE.Vector3();
@@ -18,10 +16,10 @@ const THREE = (window as any).THREE;
       new THREE.Matrix4().makeTranslation(this._location.x, this._location.y, this._location.z)
     );
 
-    this.verticesNeedUpdate = true;
-   }
+    ((this as unknown) as THREE.BoxGeometry).verticesNeedUpdate = true;
+  }
 
-   resetVertices() {
+  public resetVertices() {
     this.vertices[0].set(0.5, 0.5, 0.5);
     this.vertices[1].set(0.5, 0.5, -0.5);
     this.vertices[2].set(0.5, -0.5, 0.5);
@@ -32,7 +30,7 @@ const THREE = (window as any).THREE;
     this.vertices[7].set(-0.5, -0.5, 0.5);
   }
 
-  set location(location) {
+  set location(location: any) {
     this._location = location;
 
     // update vertices from location
@@ -49,10 +47,10 @@ const THREE = (window as any).THREE;
       new THREE.Matrix4().makeTranslation(this._location.x, this._location.y, this._location.z)
     );
 
-    this.verticesNeedUpdate = true;
+    ((this as unknown) as THREE.BoxGeometry).verticesNeedUpdate = true;
   }
 
   get location() {
     return this._location;
   }
- }
+}

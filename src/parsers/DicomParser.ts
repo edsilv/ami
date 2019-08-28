@@ -1,18 +1,17 @@
-/** * Imports ***/
-import ParsersVolume from './VolumeParser';
 import * as OpenJPEG from 'OpenJPEG.js/dist/openJPEG-DynamicMemory-browser.js';
+import ParsersVolume from './VolumeParser';
 
 import { RLEDecoder } from '../decoders/decoders.rle';
 
-let DicomParser = require('dicom-parser');
-let Jpeg = require('jpeg-lossless-decoder-js');
-let JpegBaseline = require('../../external/scripts/jpeg');
-let Jpx = require('../../external/scripts/jpx');
+import DicomParser from 'dicom-parser';
+import Jpeg from 'jpeg-lossless-decoder-js';
+import JpegBaseline from '../../external/scripts/jpeg';
+import Jpx from '../../external/scripts/jpx';
 let openJPEG; // for one time initialization
 
 /**
  * Dicom parser is a combination of utilities to get a VJS image from dicom files.
- *scripts
+ * scripts
  * Relies on dcmjs, jquery, HTML5 fetch API, HTML5 promise API.
  *
  * image-JPEG2000 (jpx) is still in use, because Cornerstone does it and may have identified some edge corners.
@@ -26,18 +25,18 @@ let openJPEG; // for one time initialization
  * VJS.parsers.dicom can pull the data from.
  */
 export default class AMIDicomParser extends ParsersVolume {
-  _id: any;
-  _arrayBuffer: any;
-  _dataSet: any;
+  public _id: any;
+  public _arrayBuffer: any;
+  public _dataSet: any;
 
-  constructor(data, id) {
+  constructor(data: any, id: any) {
     super();
 
     this._id = id;
 
     this._arrayBuffer = data.buffer;
 
-    let byteArray = new Uint8Array(this._arrayBuffer);
+    const byteArray = new Uint8Array(this._arrayBuffer);
 
     // catch error
     // throw error if any!
@@ -57,7 +56,7 @@ export default class AMIDicomParser extends ParsersVolume {
    *
    * @return {String}
    */
-  seriesInstanceUID() {
+  public seriesInstanceUID() {
     return this._dataSet.string('x0020000e');
   }
 
@@ -66,7 +65,7 @@ export default class AMIDicomParser extends ParsersVolume {
    *
    * @return {String}
    */
-  studyInstanceUID() {
+  public studyInstanceUID() {
     return this._dataSet.string('x0020000d');
   }
 
@@ -75,7 +74,7 @@ export default class AMIDicomParser extends ParsersVolume {
    *
    * @return {String}
    */
-  modality() {
+  public modality() {
     return this._dataSet.string('x00080060');
   }
 
@@ -84,7 +83,7 @@ export default class AMIDicomParser extends ParsersVolume {
    *
    * @return {String}
    */
-  segmentationType() {
+  public segmentationType() {
     return this._dataSet.string('x00620001');
   }
 
@@ -99,26 +98,26 @@ export default class AMIDicomParser extends ParsersVolume {
    *
    * @return {*}
    */
-  segmentationSegments() {
-    let segmentationSegments = [];
-    let segmentSequence = this._dataSet.elements.x00620002;
+  public segmentationSegments() {
+    const segmentationSegments = [];
+    const segmentSequence = this._dataSet.elements.x00620002;
 
     if (!segmentSequence) {
       return segmentationSegments;
     }
 
     for (let i = 0; i < segmentSequence.items.length; i++) {
-      let recommendedDisplayCIELab = this._recommendedDisplayCIELab(segmentSequence.items[i]);
-      let segmentationCode = this._segmentationCode(segmentSequence.items[i]);
-      let segmentNumber = segmentSequence.items[i].dataSet.uint16('x00620004');
-      let segmentLabel = segmentSequence.items[i].dataSet.string('x00620005');
-      let segmentAlgorithmType = segmentSequence.items[i].dataSet.string('x00620008');
+      const recommendedDisplayCIELab = this._recommendedDisplayCIELab(segmentSequence.items[i]);
+      const segmentationCode = this._segmentationCode(segmentSequence.items[i]);
+      const segmentNumber = segmentSequence.items[i].dataSet.uint16('x00620004');
+      const segmentLabel = segmentSequence.items[i].dataSet.string('x00620005');
+      const segmentAlgorithmType = segmentSequence.items[i].dataSet.string('x00620008');
 
       segmentationSegments.push({
         recommendedDisplayCIELab,
-        segmentationCodeDesignator: segmentationCode['segmentationCodeDesignator'],
-        segmentationCodeValue: segmentationCode['segmentationCodeValue'],
-        segmentationCodeMeaning: segmentationCode['segmentationCodeMeaning'],
+        segmentationCodeDesignator: segmentationCode.segmentationCodeDesignator,
+        segmentationCodeValue: segmentationCode.segmentationCodeValue,
+        segmentationCodeMeaning: segmentationCode.segmentationCodeMeaning,
         segmentNumber,
         segmentLabel,
         segmentAlgorithmType,
@@ -138,11 +137,11 @@ export default class AMIDicomParser extends ParsersVolume {
    *
    * @return {*}
    */
-  _segmentationCode(segment) {
+  public _segmentationCode(segment) {
     let segmentationCodeDesignator = 'unknown';
     let segmentationCodeValue = 'unknown';
     let segmentationCodeMeaning = 'unknown';
-    let element = segment.dataSet.elements.x00082218;
+    const element = segment.dataSet.elements.x00082218;
 
     if (element && element.items && element.items.length > 0) {
       segmentationCodeDesignator = element.items[0].dataSet.string('x00080102');
@@ -164,22 +163,22 @@ export default class AMIDicomParser extends ParsersVolume {
    *
    * @return {*}
    */
-  _recommendedDisplayCIELab(segment) {
+  public _recommendedDisplayCIELab(segment) {
     if (!segment.dataSet.elements.x0062000d) {
       return null;
     }
 
-    let offset = segment.dataSet.elements.x0062000d.dataOffset;
-    let length = segment.dataSet.elements.x0062000d.length;
-    let byteArray = segment.dataSet.byteArray.slice(offset, offset + length);
+    const offset = segment.dataSet.elements.x0062000d.dataOffset;
+    const length = segment.dataSet.elements.x0062000d.length;
+    const byteArray = segment.dataSet.byteArray.slice(offset, offset + length);
 
     // https://www.dabsoft.ch/dicom/3/C.10.7.1.1/
-    let CIELabScaled = new Uint16Array(length / 2);
+    const CIELabScaled = new Uint16Array(length / 2);
     for (let i = 0; i < length / 2; i++) {
       CIELabScaled[i] = (byteArray[2 * i + 1] << 8) + byteArray[2 * i];
     }
 
-    let CIELabNormalized = [
+    const CIELabNormalized = [
       (CIELabScaled[0] / 65535) * 100,
       (CIELabScaled[1] / 65535) * 255 - 128,
       (CIELabScaled[2] / 65535) * 255 - 128,
@@ -195,8 +194,8 @@ export default class AMIDicomParser extends ParsersVolume {
    *
    * @return {*}
    */
-  sopInstanceUID(frameIndex = 0) {
-    let sopInstanceUID = this._findStringEverywhere('x2005140f', 'x00080018', frameIndex);
+  public sopInstanceUID(frameIndex = 0) {
+    const sopInstanceUID = this._findStringEverywhere('x2005140f', 'x00080018', frameIndex);
     return sopInstanceUID;
   }
 
@@ -205,7 +204,7 @@ export default class AMIDicomParser extends ParsersVolume {
    *
    * @return {*}
    */
-  transferSyntaxUID() {
+  public transferSyntaxUID() {
     return this._dataSet.string('x00020010');
   }
 
@@ -214,7 +213,7 @@ export default class AMIDicomParser extends ParsersVolume {
    *
    * @return {*}
    */
-  studyDate() {
+  public studyDate() {
     return this._dataSet.string('x00080020');
   }
 
@@ -223,7 +222,7 @@ export default class AMIDicomParser extends ParsersVolume {
    *
    * @return {*}
    */
-  studyDescription() {
+  public studyDescription() {
     return this._dataSet.string('x00081030');
   }
 
@@ -232,7 +231,7 @@ export default class AMIDicomParser extends ParsersVolume {
    *
    * @return {*}
    */
-  seriesDate() {
+  public seriesDate() {
     return this._dataSet.string('x00080021');
   }
 
@@ -241,7 +240,7 @@ export default class AMIDicomParser extends ParsersVolume {
    *
    * @return {*}
    */
-  seriesDescription() {
+  public seriesDescription() {
     return this._dataSet.string('x0008103e');
   }
 
@@ -250,7 +249,7 @@ export default class AMIDicomParser extends ParsersVolume {
    *
    * @return {*}
    */
-  patientName() {
+  public patientName() {
     return this._dataSet.string('x00100010');
   }
 
@@ -259,7 +258,7 @@ export default class AMIDicomParser extends ParsersVolume {
    *
    * @return {*}
    */
-  patientID() {
+  public patientID() {
     return this._dataSet.string('x00100020');
   }
 
@@ -268,7 +267,7 @@ export default class AMIDicomParser extends ParsersVolume {
    *
    * @return {*}
    */
-  patientBirthdate() {
+  public patientBirthdate() {
     return this._dataSet.string('x00100030');
   }
 
@@ -277,7 +276,7 @@ export default class AMIDicomParser extends ParsersVolume {
    *
    * @return {*}
    */
-  patientSex() {
+  public patientSex() {
     return this._dataSet.string('x00100040');
   }
 
@@ -286,7 +285,7 @@ export default class AMIDicomParser extends ParsersVolume {
    *
    * @return {*}
    */
-  patientAge() {
+  public patientAge() {
     return this._dataSet.string('x00101010');
   }
 
@@ -295,11 +294,11 @@ export default class AMIDicomParser extends ParsersVolume {
    *
    * @return {*}
    */
-  photometricInterpretation() {
+  public photometricInterpretation() {
     return this._dataSet.string('x00280004');
   }
 
-  planarConfiguration() {
+  public planarConfiguration() {
     let planarConfiguration = this._dataSet.uint16('x00280006');
 
     if (typeof planarConfiguration === 'undefined') {
@@ -309,11 +308,11 @@ export default class AMIDicomParser extends ParsersVolume {
     return planarConfiguration;
   }
 
-  samplesPerPixel() {
+  public samplesPerPixel() {
     return this._dataSet.uint16('x00280002');
   }
 
-  numberOfFrames() {
+  public numberOfFrames() {
     let numberOfFrames = this._dataSet.intString('x00280008');
 
     // need something smarter!
@@ -324,9 +323,9 @@ export default class AMIDicomParser extends ParsersVolume {
     return numberOfFrames;
   }
 
-  numberOfChannels() {
+  public numberOfChannels() {
     let numberOfChannels = 1;
-    let photometricInterpretation = this.photometricInterpretation();
+    const photometricInterpretation = this.photometricInterpretation();
 
     if (
       !(
@@ -346,13 +345,13 @@ export default class AMIDicomParser extends ParsersVolume {
     return numberOfChannels;
   }
 
-  invert() {
-    let photometricInterpretation = this.photometricInterpretation();
+  public invert() {
+    const photometricInterpretation = this.photometricInterpretation();
 
     return photometricInterpretation === 'MONOCHROME1' ? true : false;
   }
 
-  imageOrientation(frameIndex = 0) {
+  public imageOrientation(frameIndex = 0) {
     // expect frame index to start at 0!
     let imageOrientation = this._findStringEverywhere('x00209116', 'x00200037', frameIndex);
 
@@ -366,9 +365,9 @@ export default class AMIDicomParser extends ParsersVolume {
     return imageOrientation;
   }
 
-  referencedSegmentNumber(frameIndex = 0) {
+  public referencedSegmentNumber(frameIndex = 0) {
     let referencedSegmentNumber = -1;
-    let referencedSegmentNumberElement = this._findInGroupSequence(
+    const referencedSegmentNumberElement = this._findInGroupSequence(
       'x52009230',
       'x0062000a',
       frameIndex
@@ -381,7 +380,7 @@ export default class AMIDicomParser extends ParsersVolume {
     return referencedSegmentNumber;
   }
 
-  pixelAspectRatio() {
+  public pixelAspectRatio() {
     let pixelAspectRatio = [
       this._dataSet.intString('x00280034', 0),
       this._dataSet.intString('x00280034', 1),
@@ -396,7 +395,7 @@ export default class AMIDicomParser extends ParsersVolume {
     return pixelAspectRatio;
   }
 
-  imagePosition(frameIndex = 0) {
+  public imagePosition(frameIndex = 0) {
     let imagePosition = this._findStringEverywhere('x00209113', 'x00200032', frameIndex);
 
     // format image orientation ('1\0\0\0\1\0') to array containing 6 numbers
@@ -408,15 +407,15 @@ export default class AMIDicomParser extends ParsersVolume {
     return imagePosition;
   }
 
-  instanceNumber(frameIndex = 0) {
+  public instanceNumber(frameIndex = 0) {
     let instanceNumber = null;
     // first look for frame!
     // per frame functionnal group sequence
-    let perFrameFunctionnalGroupSequence = this._dataSet.elements.x52009230;
+    const perFrameFunctionnalGroupSequence = this._dataSet.elements.x52009230;
 
     if (typeof perFrameFunctionnalGroupSequence !== 'undefined') {
       if (perFrameFunctionnalGroupSequence.items[frameIndex].dataSet.elements.x2005140f) {
-        let planeOrientationSequence =
+        const planeOrientationSequence =
           perFrameFunctionnalGroupSequence.items[frameIndex].dataSet.elements.x2005140f.items[0]
             .dataSet;
         instanceNumber = planeOrientationSequence.intString('x00200013');
@@ -440,7 +439,7 @@ export default class AMIDicomParser extends ParsersVolume {
     return instanceNumber;
   }
 
-  pixelSpacing(frameIndex = 0) {
+  public pixelSpacing(frameIndex = 0) {
     // expect frame index to start at 0!
     let pixelSpacing = this._findStringEverywhere('x00289110', 'x00280030', frameIndex);
 
@@ -460,8 +459,8 @@ export default class AMIDicomParser extends ParsersVolume {
     return pixelSpacing;
   }
 
-  ultrasoundRegions(frameIndex = 0) {
-    const sequence = this._dataSet.elements['x00186011'];
+  public ultrasoundRegions(frameIndex = 0) {
+    const sequence = this._dataSet.elements.x00186011;
 
     if (!sequence || !sequence.items) {
       return [];
@@ -487,9 +486,9 @@ export default class AMIDicomParser extends ParsersVolume {
     return ultrasoundRegions;
   }
 
-  frameTime(frameIndex = 0) {
+  public frameTime(frameIndex = 0) {
     let frameIncrementPointer = this._dataSet.uint16('x00280009', 1);
-    let frameRate = this._dataSet.intString('x00082144');
+    const frameRate = this._dataSet.intString('x00082144');
     let frameTime;
 
     if (typeof frameIncrementPointer === 'number') {
@@ -508,7 +507,7 @@ export default class AMIDicomParser extends ParsersVolume {
     return frameTime;
   }
 
-  rows(frameIndex = 0) {
+  public rows(frameIndex = 0) {
     let rows = this._dataSet.uint16('x00280010');
 
     if (typeof rows === 'undefined') {
@@ -519,7 +518,7 @@ export default class AMIDicomParser extends ParsersVolume {
     return rows;
   }
 
-  columns(frameIndex = 0) {
+  public columns(frameIndex = 0) {
     let columns = this._dataSet.uint16('x00280011');
 
     if (typeof columns === 'undefined') {
@@ -530,18 +529,18 @@ export default class AMIDicomParser extends ParsersVolume {
     return columns;
   }
 
-  pixelType(frameIndex = 0) {
+  public pixelType(frameIndex = 0) {
     // 0 integer, 1 float
     // dicom only support integers
     return 0;
   }
 
-  pixelRepresentation(frameIndex = 0) {
-    let pixelRepresentation = this._dataSet.uint16('x00280103');
+  public pixelRepresentation(frameIndex = 0) {
+    const pixelRepresentation = this._dataSet.uint16('x00280103');
     return pixelRepresentation;
   }
 
-  pixelPaddingValue(frameIndex = 0) {
+  public pixelPaddingValue(frameIndex = 0) {
     let padding = this._dataSet.int16('x00280120');
 
     if (typeof padding === 'undefined') {
@@ -551,39 +550,39 @@ export default class AMIDicomParser extends ParsersVolume {
     return padding;
   }
 
-  bitsAllocated(frameIndex = 0) {
+  public bitsAllocated(frameIndex = 0) {
     // expect frame index to start at 0!
-    let bitsAllocated = this._dataSet.uint16('x00280100');
+    const bitsAllocated = this._dataSet.uint16('x00280100');
     return bitsAllocated;
   }
 
-  highBit(frameIndex = 0) {
+  public highBit(frameIndex = 0) {
     // expect frame index to start at 0!
-    let highBit = this._dataSet.uint16('x00280102');
+    const highBit = this._dataSet.uint16('x00280102');
     return highBit;
   }
 
-  rescaleIntercept(frameIndex = 0) {
+  public rescaleIntercept(frameIndex = 0) {
     return this._findFloatStringInFrameGroupSequence('x00289145', 'x00281052', frameIndex);
   }
 
-  rescaleSlope(frameIndex = 0) {
+  public rescaleSlope(frameIndex = 0) {
     return this._findFloatStringInFrameGroupSequence('x00289145', 'x00281053', frameIndex);
   }
 
-  windowCenter(frameIndex = 0) {
+  public windowCenter(frameIndex = 0) {
     return this._findFloatStringInFrameGroupSequence('x00289132', 'x00281050', frameIndex);
   }
 
-  windowWidth(frameIndex = 0) {
+  public windowWidth(frameIndex = 0) {
     return this._findFloatStringInFrameGroupSequence('x00289132', 'x00281051', frameIndex);
   }
 
-  sliceThickness(frameIndex = 0) {
+  public sliceThickness(frameIndex = 0) {
     return this._findFloatStringInFrameGroupSequence('x00289110', 'x00180050', frameIndex);
   }
 
-  spacingBetweenSlices(frameIndex = 0) {
+  public spacingBetweenSlices(frameIndex = 0) {
     let spacing = this._dataSet.floatString('x00180088');
 
     if (typeof spacing === 'undefined') {
@@ -593,22 +592,22 @@ export default class AMIDicomParser extends ParsersVolume {
     return spacing;
   }
 
-  dimensionIndexValues(frameIndex = 0) {
+  public dimensionIndexValues(frameIndex = 0) {
     let dimensionIndexValues = null;
 
     // try to get it from enhanced MR images
     // per-frame functionnal group sequence
-    let perFrameFunctionnalGroupSequence = this._dataSet.elements.x52009230;
+    const perFrameFunctionnalGroupSequence = this._dataSet.elements.x52009230;
 
     if (typeof perFrameFunctionnalGroupSequence !== 'undefined') {
       let frameContentSequence =
         perFrameFunctionnalGroupSequence.items[frameIndex].dataSet.elements.x00209111;
       if (frameContentSequence !== undefined && frameContentSequence !== null) {
         frameContentSequence = frameContentSequence.items[0].dataSet;
-        let dimensionIndexValuesElt = frameContentSequence.elements.x00209157;
+        const dimensionIndexValuesElt = frameContentSequence.elements.x00209157;
         if (dimensionIndexValuesElt !== undefined && dimensionIndexValuesElt !== null) {
           // /4 because UL
-          let nbValues = dimensionIndexValuesElt.length / 4;
+          const nbValues = dimensionIndexValuesElt.length / 4;
           dimensionIndexValues = [];
 
           for (let i = 0; i < nbValues; i++) {
@@ -621,16 +620,16 @@ export default class AMIDicomParser extends ParsersVolume {
     return dimensionIndexValues;
   }
 
-  inStackPositionNumber(frameIndex = 0) {
+  public inStackPositionNumber(frameIndex = 0) {
     let inStackPositionNumber = null;
 
     // try to get it from enhanced MR images
     // per-frame functionnal group sequence
-    let perFrameFunctionnalGroupSequence = this._dataSet.elements.x52009230;
+    const perFrameFunctionnalGroupSequence = this._dataSet.elements.x52009230;
 
     if (typeof perFrameFunctionnalGroupSequence !== 'undefined') {
       // NOT A PHILIPS TRICK!
-      let philipsPrivateSequence =
+      const philipsPrivateSequence =
         perFrameFunctionnalGroupSequence.items[frameIndex].dataSet.elements.x00209111.items[0]
           .dataSet;
       inStackPositionNumber = philipsPrivateSequence.uint32('x00209057');
@@ -641,16 +640,16 @@ export default class AMIDicomParser extends ParsersVolume {
     return inStackPositionNumber;
   }
 
-  stackID(frameIndex = 0) {
+  public stackID(frameIndex = 0) {
     let stackID = null;
 
     // try to get it from enhanced MR images
     // per-frame functionnal group sequence
-    let perFrameFunctionnalGroupSequence = this._dataSet.elements.x52009230;
+    const perFrameFunctionnalGroupSequence = this._dataSet.elements.x52009230;
 
     if (typeof perFrameFunctionnalGroupSequence !== 'undefined') {
       // NOT A PHILIPS TRICK!
-      let philipsPrivateSequence =
+      const philipsPrivateSequence =
         perFrameFunctionnalGroupSequence.items[frameIndex].dataSet.elements.x00209111.items[0]
           .dataSet;
       stackID = philipsPrivateSequence.intString('x00209056');
@@ -661,11 +660,11 @@ export default class AMIDicomParser extends ParsersVolume {
     return stackID;
   }
 
-  extractPixelData(frameIndex = 0) {
+  public extractPixelData(frameIndex = 0) {
     // decompress
-    let decompressedData = this._decodePixelData(frameIndex);
+    const decompressedData = this._decodePixelData(frameIndex);
 
-    let numberOfChannels = this.numberOfChannels();
+    const numberOfChannels = this.numberOfChannels();
 
     if (numberOfChannels > 1) {
       return this._convertColorSpace(decompressedData);
@@ -678,11 +677,11 @@ export default class AMIDicomParser extends ParsersVolume {
   // private methods
   //
 
-  _findInGroupSequence(sequence, subsequence, index) {
-    let functionalGroupSequence = this._dataSet.elements[sequence];
+  public _findInGroupSequence(sequence, subsequence, index) {
+    const functionalGroupSequence = this._dataSet.elements[sequence];
 
     if (typeof functionalGroupSequence !== 'undefined') {
-      let inSequence = functionalGroupSequence.items[index].dataSet.elements[subsequence];
+      const inSequence = functionalGroupSequence.items[index].dataSet.elements[subsequence];
 
       if (typeof inSequence !== 'undefined') {
         return inSequence.items[0].dataSet;
@@ -692,9 +691,9 @@ export default class AMIDicomParser extends ParsersVolume {
     return null;
   }
 
-  _findStringInGroupSequence(sequence, subsequence, tag, index) {
+  public _findStringInGroupSequence(sequence, subsequence, tag, index) {
     // index = 0 if shared!!!
-    let dataSet = this._findInGroupSequence(sequence, subsequence, index);
+    const dataSet = this._findInGroupSequence(sequence, subsequence, index);
 
     if (dataSet !== null) {
       return dataSet.string(tag);
@@ -703,14 +702,14 @@ export default class AMIDicomParser extends ParsersVolume {
     return null;
   }
 
-  _findStringInFrameGroupSequence(subsequence, tag, index) {
+  public _findStringInFrameGroupSequence(subsequence, tag, index) {
     return (
       this._findStringInGroupSequence('x52009229', subsequence, tag, 0) ||
       this._findStringInGroupSequence('x52009230', subsequence, tag, index)
     );
   }
 
-  _findStringEverywhere(subsequence, tag, index) {
+  public _findStringEverywhere(subsequence, tag, index) {
     let targetString = this._findStringInFrameGroupSequence(subsequence, tag, index);
     // PET MODULE
     if (targetString === null) {
@@ -729,7 +728,7 @@ export default class AMIDicomParser extends ParsersVolume {
     return targetString;
   }
 
-  _findStringInSequence(sequenceTag, tag, index) {
+  public _findStringInSequence(sequenceTag, tag, index) {
     const sequence = this._dataSet.elements[sequenceTag];
 
     let targetString;
@@ -744,7 +743,7 @@ export default class AMIDicomParser extends ParsersVolume {
     return targetString;
   }
 
-  _findFloatStringInGroupSequence(sequence, subsequence, tag, index) {
+  public _findFloatStringInGroupSequence(sequence, subsequence, tag, index) {
     let dataInGroupSequence = this._dataSet.floatString(tag);
 
     // try to get it from enhanced MR images
@@ -760,16 +759,16 @@ export default class AMIDicomParser extends ParsersVolume {
     return dataInGroupSequence;
   }
 
-  _findFloatStringInFrameGroupSequence(subsequence, tag, index) {
+  public _findFloatStringInFrameGroupSequence(subsequence, tag, index) {
     return (
       this._findFloatStringInGroupSequence('x52009229', subsequence, tag, 0) ||
       this._findFloatStringInGroupSequence('x52009230', subsequence, tag, index)
     );
   }
 
-  _decodePixelData(frameIndex = 0) {
+  public _decodePixelData(frameIndex = 0) {
     // if compressed..?
-    let transferSyntaxUID = this.transferSyntaxUID();
+    const transferSyntaxUID = this.transferSyntaxUID();
 
     // find compression scheme
     if (
@@ -807,7 +806,7 @@ export default class AMIDicomParser extends ParsersVolume {
       return this._decodeUncompressed(frameIndex);
     } else if (transferSyntaxUID === '1.2.840.10008.1.2.2') {
       // Explicit VR Big Endian
-      let frame = this._decodeUncompressed(frameIndex);
+      const frame = this._decodeUncompressed(frameIndex);
       // and sawp it!
       return this._swapFrame(frame);
     } else {
@@ -818,14 +817,14 @@ export default class AMIDicomParser extends ParsersVolume {
   }
 
   // github.com/chafey/cornerstoneWADOImageLoader/blob/master/src/imageLoader/wadouri/getEncapsulatedImageFrame.js
-  framesAreFragmented() {
+  public framesAreFragmented() {
     const numberOfFrames = this._dataSet.intString('x00280008');
     const pixelDataElement = this._dataSet.elements.x7fe00010;
 
     return numberOfFrames !== pixelDataElement.fragments.length;
   }
 
-  getEncapsulatedImageFrame(frameIndex) {
+  public getEncapsulatedImageFrame(frameIndex) {
     if (
       this._dataSet.elements.x7fe00010 &&
       this._dataSet.elements.x7fe00010.basicOffsetTable.length
@@ -856,7 +855,7 @@ export default class AMIDicomParser extends ParsersVolume {
   }
 
   // used if OpenJPEG library isn't loaded (OHIF/image-JPEG2000 isn't supported and can't parse some images)
-  _decodeJpx(frameIndex = 0) {
+  public _decodeJpx(frameIndex = 0) {
     const jpxImage = new Jpx();
     // https://github.com/OHIF/image-JPEG2000/issues/6
     // It currently returns either Int16 or Uint16 based on whether the codestream is signed or not.
@@ -875,7 +874,7 @@ export default class AMIDicomParser extends ParsersVolume {
     return jpxImage.tiles[0].items;
   }
 
-  _decodeOpenJPEG(frameIndex = 0) {
+  public _decodeOpenJPEG(frameIndex = 0) {
     const encodedPixelData = this.getEncapsulatedImageFrame(frameIndex);
     const bytesPerPixel = this.bitsAllocated(frameIndex) <= 8 ? 1 : 2;
     const signed = this.pixelRepresentation(frameIndex) === 1;
@@ -964,7 +963,7 @@ export default class AMIDicomParser extends ParsersVolume {
   }
 
   // from cornerstone
-  _decodeJ2K(frameIndex = 0) {
+  public _decodeJ2K(frameIndex = 0) {
     if (typeof OpenJPEG === 'undefined') {
       // OpenJPEG decoder not loaded
       return this._decodeJpx(frameIndex);
@@ -981,7 +980,7 @@ export default class AMIDicomParser extends ParsersVolume {
     return this._decodeOpenJPEG(frameIndex);
   }
 
-  _decodeRLE(frameIndex = 0) {
+  public _decodeRLE(frameIndex = 0) {
     const bitsAllocated = this.bitsAllocated(frameIndex);
     const planarConfiguration = this.planarConfiguration();
     const columns = this.columns();
@@ -1010,13 +1009,13 @@ export default class AMIDicomParser extends ParsersVolume {
   }
 
   // from cornerstone
-  _decodeJPEGLossless(frameIndex = 0) {
-    let encodedPixelData = this.getEncapsulatedImageFrame(frameIndex);
-    let pixelRepresentation = this.pixelRepresentation(frameIndex);
-    let bitsAllocated = this.bitsAllocated(frameIndex);
-    let byteOutput = bitsAllocated <= 8 ? 1 : 2;
-    let decoder = new Jpeg.lossless.Decoder();
-    let decompressedData = decoder.decode(
+  public _decodeJPEGLossless(frameIndex = 0) {
+    const encodedPixelData = this.getEncapsulatedImageFrame(frameIndex);
+    const pixelRepresentation = this.pixelRepresentation(frameIndex);
+    const bitsAllocated = this.bitsAllocated(frameIndex);
+    const byteOutput = bitsAllocated <= 8 ? 1 : 2;
+    const decoder = new Jpeg.lossless.Decoder();
+    const decompressedData = decoder.decode(
       encodedPixelData.buffer,
       encodedPixelData.byteOffset,
       encodedPixelData.length,
@@ -1035,12 +1034,12 @@ export default class AMIDicomParser extends ParsersVolume {
     }
   }
 
-  _decodeJPEGBaseline(frameIndex = 0) {
-    let encodedPixelData = this.getEncapsulatedImageFrame(frameIndex);
-    let rows = this.rows(frameIndex);
-    let columns = this.columns(frameIndex);
-    let bitsAllocated = this.bitsAllocated(frameIndex);
-    let jpegBaseline = new JpegBaseline();
+  public _decodeJPEGBaseline(frameIndex = 0) {
+    const encodedPixelData = this.getEncapsulatedImageFrame(frameIndex);
+    const rows = this.rows(frameIndex);
+    const columns = this.columns(frameIndex);
+    const bitsAllocated = this.bitsAllocated(frameIndex);
+    const jpegBaseline = new JpegBaseline();
     jpegBaseline.parse(encodedPixelData);
 
     if (bitsAllocated === 8) {
@@ -1050,15 +1049,15 @@ export default class AMIDicomParser extends ParsersVolume {
     }
   }
 
-  _decodeUncompressed(frameIndex = 0) {
-    let pixelRepresentation = this.pixelRepresentation(frameIndex);
-    let bitsAllocated = this.bitsAllocated(frameIndex);
-    let pixelDataElement = this._dataSet.elements.x7fe00010;
-    let pixelDataOffset = pixelDataElement.dataOffset;
-    let numberOfChannels = this.numberOfChannels();
-    let numPixels = this.rows(frameIndex) * this.columns(frameIndex) * numberOfChannels;
+  public _decodeUncompressed(frameIndex = 0) {
+    const pixelRepresentation = this.pixelRepresentation(frameIndex);
+    const bitsAllocated = this.bitsAllocated(frameIndex);
+    const pixelDataElement = this._dataSet.elements.x7fe00010;
+    const pixelDataOffset = pixelDataElement.dataOffset;
+    const numberOfChannels = this.numberOfChannels();
+    const numPixels = this.rows(frameIndex) * this.columns(frameIndex) * numberOfChannels;
     let frameOffset = 0;
-    let buffer = this._dataSet.byteArray.buffer;
+    const buffer = this._dataSet.byteArray.buffer;
 
     if (pixelRepresentation === 0 && bitsAllocated === 8) {
       // unsigned 8 bit
@@ -1077,20 +1076,20 @@ export default class AMIDicomParser extends ParsersVolume {
       frameOffset = pixelDataOffset + frameIndex * numPixels * 4;
       return new Uint32Array(buffer, frameOffset, numPixels);
     } else if (pixelRepresentation === 0 && bitsAllocated === 1) {
-      let newBuffer = new ArrayBuffer(numPixels);
-      let newArray = new Uint8Array(newBuffer);
+      const newBuffer = new ArrayBuffer(numPixels);
+      const newArray = new Uint8Array(newBuffer);
 
       frameOffset = pixelDataOffset + frameIndex * numPixels;
       let index = 0;
 
-      let bitStart = frameIndex * numPixels;
-      let bitEnd = frameIndex * numPixels + numPixels;
+      const bitStart = frameIndex * numPixels;
+      const bitEnd = frameIndex * numPixels + numPixels;
 
-      let byteStart = Math.floor(bitStart / 8);
+      const byteStart = Math.floor(bitStart / 8);
       let bitStartOffset = bitStart - byteStart * 8;
-      let byteEnd = Math.ceil(bitEnd / 8);
+      const byteEnd = Math.ceil(bitEnd / 8);
 
-      let targetBuffer = new Uint8Array(buffer, pixelDataOffset);
+      const targetBuffer = new Uint8Array(buffer, pixelDataOffset);
 
       for (let i = byteStart; i <= byteEnd; i++) {
         while (bitStartOffset < 8) {
@@ -1135,16 +1134,16 @@ export default class AMIDicomParser extends ParsersVolume {
     }
   }
 
-  _interpretAsRGB(photometricInterpretation) {
+  public _interpretAsRGB(photometricInterpretation) {
     const rgbLikeTypes = ['RGB', 'YBR_RCT', 'YBR_ICT', 'YBR_FULL_422'];
 
     return rgbLikeTypes.indexOf(photometricInterpretation) !== -1;
   }
 
-  _convertColorSpace(uncompressedData) {
+  public _convertColorSpace(uncompressedData) {
     let rgbData = null;
-    let photometricInterpretation = this.photometricInterpretation();
-    let planarConfiguration = this.planarConfiguration();
+    const photometricInterpretation = this.photometricInterpretation();
+    const planarConfiguration = this.planarConfiguration();
 
     const interpretAsRGB = this._interpretAsRGB(photometricInterpretation);
     if (interpretAsRGB && planarConfiguration === 0) {
@@ -1165,7 +1164,7 @@ export default class AMIDicomParser extends ParsersVolume {
         throw error;
       }
 
-      let numPixels = uncompressedData.length / 3;
+      const numPixels = uncompressedData.length / 3;
       let rgbaIndex = 0;
       let rIndex = 0;
       let gIndex = numPixels;
@@ -1190,13 +1189,13 @@ export default class AMIDicomParser extends ParsersVolume {
       }
 
       // https://github.com/chafey/cornerstoneWADOImageLoader/blob/master/src/decodeYBRFull.js
-      let nPixels = uncompressedData.length / 3;
+      const nPixels = uncompressedData.length / 3;
       let ybrIndex = 0;
       let rgbaIndex = 0;
       for (let i = 0; i < nPixels; i++) {
-        let y = uncompressedData[ybrIndex++];
-        let cb = uncompressedData[ybrIndex++];
-        let cr = uncompressedData[ybrIndex++];
+        const y = uncompressedData[ybrIndex++];
+        const cb = uncompressedData[ybrIndex++];
+        const cr = uncompressedData[ybrIndex++];
         rgbData[rgbaIndex++] = y + 1.402 * (cr - 128); // red
         rgbData[rgbaIndex++] = y - 0.34414 * (cb - 128) - 0.71414 * (cr - 128); // green
         rgbData[rgbaIndex++] = y + 1.772 * (cb - 128); // blue
@@ -1215,9 +1214,9 @@ export default class AMIDicomParser extends ParsersVolume {
   /**
    * Swap bytes in frame.
    */
-  _swapFrame(frame) {
+  public _swapFrame(frame) {
     // swap bytes ( if 8bits (1byte), nothing to swap)
-    let bitsAllocated = this.bitsAllocated();
+    const bitsAllocated = this.bitsAllocated();
 
     if (bitsAllocated === 16) {
       for (let i = 0; i < frame.length; i++) {
@@ -1232,7 +1231,7 @@ export default class AMIDicomParser extends ParsersVolume {
     return frame;
   }
 
-  _getUnitsName(value) {
+  public _getUnitsName(value) {
     const units = {
       0: 'none',
       1: 'percent',

@@ -1,4 +1,3 @@
-/** * Imports ***/
 import BaseModel from './BaseModel';
 
 /**
@@ -81,7 +80,7 @@ export default class SeriesModel extends BaseModel {
    *
    * @override
    */
-  validate(model) {
+  public validate(model: any) {
     if (
       !(
         super.validate(model) &&
@@ -112,7 +111,7 @@ export default class SeriesModel extends BaseModel {
    *
    * @override
    */
-  merge(series) {
+  public merge(series: any) {
     if (!this.validate(series)) {
       return false;
     }
@@ -145,8 +144,8 @@ export default class SeriesModel extends BaseModel {
    *
    * @return {Array.<SeriesModel>} Array of series properly merged.
    */
-  mergeSeries(target) {
-    let seriesContainer = [this];
+  public mergeSeries(target: any) {
+    const seriesContainer = [this];
     this.mergeModels(seriesContainer, target);
     return seriesContainer;
   }
@@ -156,7 +155,7 @@ export default class SeriesModel extends BaseModel {
    *
    * @param {*} seriesInstanceUID
    */
-  set seriesInstanceUID(seriesInstanceUID) {
+  set seriesInstanceUID(seriesInstanceUID: any) {
     this._seriesInstanceUID = seriesInstanceUID;
   }
 
@@ -174,7 +173,7 @@ export default class SeriesModel extends BaseModel {
    *
    * @param {*} transferSyntaxUID
    */
-  set transferSyntaxUID(transferSyntaxUID) {
+  set transferSyntaxUID(transferSyntaxUID: any) {
     this._transferSyntaxUID = transferSyntaxUID;
   }
 
@@ -222,7 +221,7 @@ export default class SeriesModel extends BaseModel {
    *
    * @param {*} studyDate
    */
-  set studyDate(studyDate) {
+  set studyDate(studyDate: any) {
     this._studyDate = studyDate;
   }
 
@@ -240,7 +239,7 @@ export default class SeriesModel extends BaseModel {
    *
    * @param {*} studyDescription
    */
-  set studyDescription(studyDescription) {
+  set studyDescription(studyDescription: any) {
     this._studyDescription = studyDescription;
   }
 
@@ -258,7 +257,7 @@ export default class SeriesModel extends BaseModel {
    *
    * @param {*} seriesDate
    */
-  set seriesDate(seriesDate) {
+  set seriesDate(seriesDate: any) {
     this._seriesDate = seriesDate;
   }
 
@@ -276,7 +275,7 @@ export default class SeriesModel extends BaseModel {
    *
    * @param {*} seriesDescription
    */
-  set seriesDescription(seriesDescription) {
+  set seriesDescription(seriesDescription: any) {
     this._seriesDescription = seriesDescription;
   }
 
@@ -294,7 +293,7 @@ export default class SeriesModel extends BaseModel {
    *
    * @param {*} patientID
    */
-  set patientID(patientID) {
+  set patientID(patientID: any) {
     this._patientID = patientID;
   }
 
@@ -312,7 +311,7 @@ export default class SeriesModel extends BaseModel {
    *
    * @param {*} patientName
    */
-  set patientName(patientName) {
+  set patientName(patientName: any) {
     this._patientName = patientName;
   }
 
@@ -330,7 +329,7 @@ export default class SeriesModel extends BaseModel {
    *
    * @param {*} patientAge
    */
-  set patientAge(patientAge) {
+  set patientAge(patientAge: any) {
     this._patientAge = patientAge;
   }
 
@@ -348,7 +347,7 @@ export default class SeriesModel extends BaseModel {
    *
    * @param {*} patientBirthdate
    */
-  set patientBirthdate(patientBirthdate) {
+  set patientBirthdate(patientBirthdate: any) {
     this._patientBirthdate = patientBirthdate;
   }
 
@@ -366,7 +365,7 @@ export default class SeriesModel extends BaseModel {
    *
    * @param {*} patientSex
    */
-  set patientSex(patientSex) {
+  set patientSex(patientSex: any) {
     this._patientSex = patientSex;
   }
 
@@ -384,7 +383,7 @@ export default class SeriesModel extends BaseModel {
    *
    * @param {*} numberOfFrames
    */
-  set numberOfFrames(numberOfFrames) {
+  set numberOfFrames(numberOfFrames: any) {
     this._numberOfFrames = numberOfFrames;
   }
 
@@ -402,7 +401,7 @@ export default class SeriesModel extends BaseModel {
    *
    * @param {*} numberOfChannels
    */
-  set numberOfChannels(numberOfChannels) {
+  set numberOfChannels(numberOfChannels: any) {
     this._numberOfChannels = numberOfChannels;
   }
 
@@ -420,7 +419,7 @@ export default class SeriesModel extends BaseModel {
    *
    * @param {*} stack
    */
-  set stack(stack) {
+  set stack(stack: any) {
     this._stack = stack;
   }
 
@@ -438,7 +437,7 @@ export default class SeriesModel extends BaseModel {
    *
    * @param {*} modality
    */
-  set modality(modality) {
+  set modality(modality: any) {
     this._modality = modality;
   }
 
@@ -456,7 +455,7 @@ export default class SeriesModel extends BaseModel {
    *
    * @param {*} segmentationType
    */
-  set segmentationType(segmentationType) {
+  set segmentationType(segmentationType: any) {
     this._segmentationType = segmentationType;
   }
 
@@ -474,7 +473,7 @@ export default class SeriesModel extends BaseModel {
    *
    * @param {*} segmentationSegments
    */
-  set segmentationSegments(segmentationSegments) {
+  set segmentationSegments(segmentationSegments: any) {
     this._segmentationSegments = segmentationSegments;
   }
 

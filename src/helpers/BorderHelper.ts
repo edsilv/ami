@@ -1,5 +1,3 @@
- 
-
 const THREE = (window as any).THREE;
 
 /**
@@ -13,7 +11,7 @@ export default class BorderHelper extends THREE.Object3D {
   private _visible: boolean;
   private _color: number;
 
-  constructor(helpersSlice) {
+  constructor(helpersSlice: any) {
     super();
 
     this._helpersSlice = helpersSlice;
@@ -27,7 +25,7 @@ export default class BorderHelper extends THREE.Object3D {
     this._create();
   }
 
-  set helpersSlice(helpersSlice) {
+  set helpersSlice(helpersSlice: any) {
     this._helpersSlice = helpersSlice;
     this._update();
   }
@@ -36,7 +34,7 @@ export default class BorderHelper extends THREE.Object3D {
     return this._helpersSlice;
   }
 
-  set visible(visible) {
+  set visible(visible: any) {
     this._visible = visible;
     if (this._mesh) {
       this._mesh.visible = this._visible;
@@ -47,7 +45,7 @@ export default class BorderHelper extends THREE.Object3D {
     return this._visible;
   }
 
-  set color(color) {
+  set color(color: any) {
     this._color = color;
     if (this._material) {
       this._material.color.set(this._color);
@@ -58,7 +56,7 @@ export default class BorderHelper extends THREE.Object3D {
     return this._color;
   }
 
-  _create() {
+  public _create() {
     if (!this._material) {
       this._material = new THREE.LineBasicMaterial({
         color: this._color,
@@ -76,7 +74,7 @@ export default class BorderHelper extends THREE.Object3D {
     const positions = new Float32Array((nbOfVertices + 1) * 3);
     positions.set(this._helpersSlice.geometry.attributes.position.array, 0);
     positions.set(this._helpersSlice.geometry.vertices[0].toArray(), nbOfVertices * 3);
-    this._geometry.addAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
+    this._geometry.addAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
 
     this._mesh = new THREE.Line(this._geometry, this._material);
     if (this._helpersSlice.aabbSpace === 'IJK') {
@@ -88,7 +86,7 @@ export default class BorderHelper extends THREE.Object3D {
     this.add(this._mesh);
   }
 
-  _update() {
+  public _update() {
     // update slice
     if (this._mesh) {
       this.remove(this._mesh);
@@ -99,7 +97,7 @@ export default class BorderHelper extends THREE.Object3D {
     this._create();
   }
 
-  dispose() {
+  public dispose() {
     (this._mesh.material as any).dispose();
     this._mesh.material = null;
     this._geometry.dispose();

@@ -1,6 +1,7 @@
 import CoreUtils from './CoreUtils';
 import Validators from './CoreValidators';
 
+// tslint:disable-next-line: no-any
 const THREE = (window as any).THREE;
 
 /**
@@ -129,23 +130,11 @@ export default class CoreIntersections {
     //    .'
     //   +
 
-    const orientationX = new THREE.Vector3(
-      1,
-      0,
-      0,
-    );
+    const orientationX = new THREE.Vector3(1, 0, 0);
 
-    const orientationY = new THREE.Vector3(
-      0,
-      1,
-      0,
-    );
+    const orientationY = new THREE.Vector3(0, 1, 0);
 
-    const orientationZ = new THREE.Vector3(
-      0,
-      0,
-      1,
-    );
+    const orientationZ = new THREE.Vector3(0, 0, 1);
 
     const ray = this.posdir(
       new THREE.Vector3(
@@ -256,13 +245,13 @@ export default class CoreIntersections {
     );
     this.rayPlaneInBBox(ray5, planeAABB, bbox, intersections);
 
-    ray5.direction = orientationY.clone()
+    ray5.direction = orientationY.clone();
     this.rayPlaneInBBox(ray5, planeAABB, bbox, intersections);
 
     // @todo make sure objects are unique...
 
     // back to original space
-    intersections.map((element) => {
+    intersections.map(element => {
       return element.applyMatrix4(fromAABB);
     });
 
@@ -365,23 +354,38 @@ export default class CoreIntersections {
       this.rayPlaneInBBox(ray, plane, bbox, intersections);
 
       // X max
-      plane = this.posdir(new THREE.Vector3(bbox.max.x, box.center.y, box.center.z), new THREE.Vector3(1, 0, 0));
+      plane = this.posdir(
+        new THREE.Vector3(bbox.max.x, box.center.y, box.center.z),
+        new THREE.Vector3(1, 0, 0)
+      );
       this.rayPlaneInBBox(ray, plane, bbox, intersections);
 
       // Y min
-      plane = this.posdir(new THREE.Vector3(box.center.x, bbox.min.y, box.center.z), new THREE.Vector3(0, -1, 0));
+      plane = this.posdir(
+        new THREE.Vector3(box.center.x, bbox.min.y, box.center.z),
+        new THREE.Vector3(0, -1, 0)
+      );
       this.rayPlaneInBBox(ray, plane, bbox, intersections);
 
       // Y max
-      plane = this.posdir(new THREE.Vector3(box.center.x, bbox.max.y, box.center.z), new THREE.Vector3(0, 1, 0));
+      plane = this.posdir(
+        new THREE.Vector3(box.center.x, bbox.max.y, box.center.z),
+        new THREE.Vector3(0, 1, 0)
+      );
       this.rayPlaneInBBox(ray, plane, bbox, intersections);
 
       // Z min
-      plane = this.posdir(new THREE.Vector3(box.center.x, box.center.y, bbox.min.z), new THREE.Vector3(0, 0, -1));
+      plane = this.posdir(
+        new THREE.Vector3(box.center.x, box.center.y, bbox.min.z),
+        new THREE.Vector3(0, 0, -1)
+      );
       this.rayPlaneInBBox(ray, plane, bbox, intersections);
 
       // Z max
-      plane = this.posdir(new THREE.Vector3(box.center.x, box.center.y, bbox.max.z), new THREE.Vector3(0, 0, 1));
+      plane = this.posdir(
+        new THREE.Vector3(box.center.x, box.center.y, bbox.max.z),
+        new THREE.Vector3(0, 0, 1)
+      );
       this.rayPlaneInBBox(ray, plane, bbox, intersections);
     }
 
