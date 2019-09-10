@@ -1,8 +1,9 @@
+uniform sampler2D uTextureContainer[7];      // Length 7
+
 void AMItexture3D(
     in ivec3 dataCoordinates, 
     in int uTextureSize,
     in ivec3 uDataDimensions,
-    in sampler2D uTextureContainer[7],
     in int uPackedPerPixel,
     out vec4 dataValue, 
     out int offset
@@ -36,10 +37,21 @@ void AMItexture3D(
     float textureIndexF = float(textureIndex);
     vec4 addition = vec4(0.);
 
-    for (int i = 0; i < 7; i++ ) {
-        float i_float = float(i);
-        addition += step( abs( textureIndexF - i_float ), 0.0 ) * texture2D(uTextureContainer[i], uv);
-    }
+    // TODO: Does not work on mobile; would prefer for loop
+    // CANNOT INDEX INTO ARRAY OF SAMPLERS ON MOBILE WITH NON-CONSTANT INDEX
+    // for (int i = 0; i < 7; i++ ) {
+    //     float i_float = float(i);
+    //     addition += step( abs( textureIndexF - i_float ), 0.0 ) * texture2D(uTextureContainer[i], uv);
+    // }
+
+    addition += step( abs( textureIndexF - 0.0 ), 0.0 ) * texture2D(uTextureContainer[0], uv);
+    addition += step( abs( textureIndexF - 1.0 ), 0.0 ) * texture2D(uTextureContainer[1], uv);
+    addition += step( abs( textureIndexF - 2.0 ), 0.0 ) * texture2D(uTextureContainer[2], uv);
+    addition += step( abs( textureIndexF - 3.0 ), 0.0 ) * texture2D(uTextureContainer[3], uv);
+    addition += step( abs( textureIndexF - 4.0 ), 0.0 ) * texture2D(uTextureContainer[4], uv);
+    addition += step( abs( textureIndexF - 5.0 ), 0.0 ) * texture2D(uTextureContainer[5], uv);
+    addition += step( abs( textureIndexF - 6.0 ), 0.0 ) * texture2D(uTextureContainer[6], uv);
+
     dataValue = addition;
 }
 

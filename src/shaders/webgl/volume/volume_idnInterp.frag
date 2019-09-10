@@ -8,7 +8,7 @@ const int MAX_STEPS = 1024;
 const float EPSILON = 0.0000152587;
 
 uniform int uTextureSize;
-uniform sampler2D uTextureContainer[7];      // Length 7
+// uniform sampler2D uTextureContainer[7];      // Length 7
 uniform ivec3 uDataDimensions;
 uniform mat4 uWorldToData;
 uniform float uWindowCenterWidth[2];         // Length 2
@@ -97,7 +97,6 @@ void main(void) {
       uPixelType,
       uTextureSize,
       uDataDimensions,
-      uTextureContainer,
       uBitsAllocated,
       uNumberOfChannels,
       uPackedPerPixel,

@@ -7,7 +7,7 @@
 const int MAX_STEPS = 1024;
 
 uniform int uTextureSize;
-uniform sampler2D uTextureContainer[7];      // Length 7
+// uniform sampler2D uTextureContainer[7];      // Length 7
 uniform ivec3 uDataDimensions;
 uniform mat4 uWorldToData;
 uniform float uWindowCenterWidth[2];         // Length 2
@@ -102,7 +102,6 @@ void main(void) {
                 currentVoxel,
                 uTextureSize,
                 uDataDimensions,
-                uTextureContainer,
                 uBitsAllocated,
                 uNumberOfChannels,
                 1,
@@ -151,7 +150,6 @@ void main(void) {
             currentVoxel,
             uTextureSize,
             uDataDimensions,
-            uTextureContainer,
             uBitsAllocated,
             uNumberOfChannels,
             1,
