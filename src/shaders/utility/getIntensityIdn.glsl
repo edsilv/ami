@@ -21,7 +21,7 @@ void getIntensityIdn(
     dataCoordinates,
     uTextureSize,
     uDataDimensions,
-    uTextureContainer[7],
+    uTextureContainer,
     uBitsAllocated,
     uNumberOfChannels,
     0,
